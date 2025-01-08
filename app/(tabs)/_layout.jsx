@@ -1,7 +1,7 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import TabIcon from '../../constants/TabIcon'; 
+import TabIcon from '../../components/TabIcon'; 
 import { Colors } from '../../constants/Colors';
 
 const TabLayout = () => {
