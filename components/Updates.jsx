@@ -1,0 +1,42 @@
+import { View, Text, Image } from 'react-native'
+import React from 'react'
+
+const Updates = () => {
+  return (
+    <View style={{
+      marginTop: 20,
+      paddingHorizontal: 16,
+      position:'relative'
+    }}>
+      <Text style={{
+        fontFamily: 'Monsterrat-SemiBold',
+        fontSize: 18,
+        marginBottom: 2,
+        color: '#000',
+        zIndex:2
+      }}>
+        Updates
+      </Text>
+      <Image source={require('../assets/images/Home2.png')}
+        style={{
+          width: '100%',
+          resizeMode: 'contain',
+          height:260,
+        }}
+      />
+      <Image
+        source={require('../assets/images/Bg1.png')}
+        style={{
+          position: 'absolute',
+          height: 100,
+          top: -57,
+          resizeMode: 'cover',
+          zIndex:1
+        }} />
+
+    </View>
+
+  )
+}
+
+export default Updates;
