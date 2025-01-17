@@ -5,11 +5,11 @@ const Updates = () => {
   return (
     <View style={{
       marginTop: 20,
-      paddingHorizontal: 16,
+      paddingHorizontal: 18,
       position:'relative'
     }}>
       <Text style={{
-        fontFamily: 'Monsterrat-SemiBold',
+        fontFamily: 'Monsterrat-Bold',
         fontSize: 18,
         marginBottom: 2,
         color: '#000',
@@ -29,7 +29,7 @@ const Updates = () => {
         style={{
           position: 'absolute',
           height: 100,
-          top: -57,
+          top: -65,
           resizeMode: 'cover',
           zIndex:1
         }} />

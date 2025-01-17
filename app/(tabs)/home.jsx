@@ -2,6 +2,8 @@ import { View, Text, TouchableOpacity, ImageBackground, ScrollView } from 'react
 import React from 'react';
 import Slider from '../../components/Slider';
 import Updates from '../../components/Updates';
+import Heroes from '../../components/Heroes';
+import Teams from '../../components/Teams';
 
 const Home = () => {
   return (
@@ -82,7 +84,7 @@ const Home = () => {
               >
                 <Text
                   style={{
-                    fontFamily: 'Monsterrat-SemiBold',
+                    fontFamily: 'Monsterrat-semiBold',
                     fontSize: 16,
                     color: '#FFF',
                     textAlign: 'center',
@@ -117,6 +119,8 @@ const Home = () => {
           </View>
           <Slider />
           <Updates />
+          <Heroes/>
+          <Teams/>
         </View>
       </ImageBackground>
     </ScrollView>

@@ -1,4 +1,4 @@
-import { View, Text, FlatList, Image, ImageBackground, ScrollView, ScrollViewComponent } from 'react-native'
+import { View, Text, FlatList, Image,} from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { collection, query, getDocs } from 'firebase/firestore'
 import { db } from "../configs/FirebaseConfig"
@@ -28,7 +28,7 @@ const Slider = () => {
         paddingHorizontal: 16,
       }}>
         <Text style={{
-          fontFamily: 'Monsterrat-SemiBold', 
+          fontFamily: 'Monsterrat-Bold', 
           fontSize: 18,
           marginBottom: 10,
           color: '#000'
