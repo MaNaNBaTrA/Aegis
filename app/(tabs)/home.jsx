@@ -1,13 +1,55 @@
 import { View, Text, TouchableOpacity, ImageBackground, ScrollView } from 'react-native';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Slider from '../../components/Slider';
 import Updates from '../../components/Updates';
 import Heroes from '../../components/Heroes';
 import Teams from '../../components/Teams';
+import Footer from '../../components/Footer';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from "../../configs/FirebaseConfig";
 
 const Home = () => {
+
+  const [quote, setQuote] = useState('');
+  const [hero, setHero] = useState('');
+
+  const currentDate = new Date().toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  }); 
+
+  const fetchRandomQuote = async () => {
+    try {
+      const quotesCollection = collection(db, 'Quotes'); 
+      const querySnapshot = await getDocs(quotesCollection);
+      const quotesList = [];
+      
+      querySnapshot.forEach((doc) => {
+        quotesList.push(doc.data());
+      });
+
+      const randomQuote = quotesList[Math.floor(Math.random() * quotesList.length)];
+      setQuote(randomQuote.Quote);
+      setHero(randomQuote.name);
+    } catch (error) {
+      console.error("Error fetching quotes: ", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchRandomQuote(); 
+
+    const interval = setInterval(fetchRandomQuote, 3600000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <ScrollView>
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      showsHorizontalScrollIndicator={false}
+    >
       <ImageBackground
         source={require('../../assets/images/Home.png')}
         style={{
@@ -39,7 +81,7 @@ const Home = () => {
                 marginTop: 8,
               }}
             >
-              8 Dec 2025
+              {currentDate}
             </Text>
 
             <Text
@@ -102,7 +144,7 @@ const Home = () => {
                 marginTop: 14,
               }}
             >
-              I choose to run toward my problems, and not away from them.
+              {quote}
             </Text>
 
             <Text
@@ -114,13 +156,14 @@ const Home = () => {
                 textAlign: 'right',
               }}
             >
-              ⁓ Thor
+              ⁓ {hero}
             </Text>
           </View>
           <Slider />
           <Updates />
-          <Heroes/>
-          <Teams/>
+          <Heroes />
+          <Teams />
+          <Footer />
         </View>
       </ImageBackground>
     </ScrollView>
