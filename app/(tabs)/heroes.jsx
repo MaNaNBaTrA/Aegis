@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TextInput, TouchableOpacity, Image } from 'react-native';
+import { View, Text, FlatList, TextInput, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';  
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../configs/FirebaseConfig';
 
 const Heroes = () => {
-  const router = useRouter();  // Initialize the router
+  const router = useRouter();
   const [heroes, setHeroes] = useState([]);
   const [filteredHeroes, setFilteredHeroes] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Fetching heroes from Firebase
   const fetchHeroes = async () => {
     try {
       const heroesCollection = collection(db, 'Heroes');
@@ -23,6 +24,9 @@ const Heroes = () => {
       setFilteredHeroes(heroesList);
     } catch (error) {
       console.error('Error fetching heroes: ', error);
+      setError('Failed to fetch heroes.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -42,21 +46,26 @@ const Heroes = () => {
     fetchHeroes();
   }, []);
 
-  const navigateToHeroDetail = (hero) => {
-    // Ensuring hero detail is passed as a query parameter
-    router.push(`/heroDetail?heroId=${hero.id}`);
-  };
+  if (isLoading) {
+    return (
+      <View style={styles.center}>
+        <Text>Loading heroes...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.center}>
+        <Text style={{ color: 'red' }}>{error}</Text>
+      </View>
+    );
+  }
 
   return (
-    <View style={{ flex: 1, padding: 16 }}>
+    <View style={styles.container}>
       <TextInput
-        style={{
-          borderWidth: 1,
-          borderColor: '#ccc',
-          padding: 8,
-          borderRadius: 5,
-          marginBottom: 16,
-        }}
+        style={styles.searchInput}
         placeholder="Search for heroes"
         value={searchQuery}
         onChangeText={handleSearch}
@@ -66,31 +75,65 @@ const Heroes = () => {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <TouchableOpacity
-            style={{
-              flexDirection: 'row',
-              padding: 12,
-              marginBottom: 10,
-              backgroundColor: '#f8f8f8',
-              borderRadius: 10,
-              alignItems: 'center',
-            }}
-            onPress={() => navigateToHeroDetail(item)}
+            style={styles.heroItem}
+            onPress={() => router.push(`../HeroDetail/${item.name}`)}
           >
             <Image
-              source={{ uri: item.uri }}
-              style={{
-                width: 50,
-                height: 50,
-                borderRadius: 25,
-                marginRight: 12,
-              }}
+              source={{ uri: item.uri || 'https://via.placeholder.com/50' }}
+              style={styles.heroImage}
             />
-            <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{item.name}</Text>
+            <Text style={styles.heroName}>{item.name}</Text>
           </TouchableOpacity>
         )}
+        ListEmptyComponent={
+          <Text style={styles.emptyText}>No heroes found</Text>
+        }
       />
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+  },
+  searchInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 8,
+    borderRadius: 5,
+    marginBottom: 16,
+  },
+  heroItem: {
+    flexDirection: 'row',
+    padding: 12,
+    marginBottom: 10,
+    backgroundColor: '#f8f8f8',
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  heroImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 12,
+  },
+  heroName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  emptyText: {
+    textAlign: 'center',
+    marginTop: 20,
+    fontSize: 16,
+    color: '#777',
+  },
+  center: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
 
 export default Heroes;
