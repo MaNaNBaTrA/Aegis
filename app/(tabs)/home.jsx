@@ -111,6 +111,8 @@ const Home = () => {
                   position: 'absolute',
                   left: 0,
                   top: 18,
+                  zIndex:1,
+                  right:2
                 }}
               >
                 “

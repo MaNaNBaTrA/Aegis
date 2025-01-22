@@ -11,6 +11,9 @@ export default function RootLayout()
     'Monsterrat-Medium':require('../assets/fonts/Monserrat/Montserrat-Medium.ttf'),
     'Monsterrat-Regular':require('../assets/fonts/Monserrat/Montserrat-Regular.ttf'),
     'Monsterrat-SemiBold':require('../assets/fonts/Monserrat/Montserrat-SemiBold.ttf'),
+    'Monsterrat-BoldItalic':require('../assets/fonts/Monserrat/Montserrat-BoldItalic.ttf'),
+    'Monsterrat-ExtraBoldItalic':require('../assets/fonts/Monserrat/Montserrat-ExtraBoldItalic.ttf'),
+    'Monsterrat-SemiBoldItalic':require('../assets/fonts/Monserrat/Montserrat-SemiBoldItalic.ttf')
   })
   
   return <Stack screenOptions={{
