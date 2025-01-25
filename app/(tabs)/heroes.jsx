@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image, ScrollView, ImageBackground, Dimensions, Button } from 'react-native';
-import { collection, getDocs } from 'firebase/firestore'; 
-import { db } from '../../configs/FirebaseConfig'; 
+import { View, Text, TextInput, TouchableOpacity, Image, ScrollView, ImageBackground, Dimensions, ActivityIndicator } from 'react-native';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../../configs/FirebaseConfig';
 import { useRouter } from 'expo-router';
 
 const Heroes = () => {
@@ -80,7 +80,7 @@ const Heroes = () => {
     }
   };
 
-  const { height } = Dimensions.get('window'); 
+  const { height } = Dimensions.get('window');
   const numberOfImages = Math.ceil(height / 50);
 
   const renderHeroName = (name) => {
@@ -94,7 +94,7 @@ const Heroes = () => {
             fontFamily: 'Monsterrat-ExtraBoldItalic',
             textAlign: 'center',
             lineHeight: 32,
-            top:14
+            top: 14
           }}
         >
           {name}
@@ -129,6 +129,22 @@ const Heroes = () => {
       );
     }
   };
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#fece2f" />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>{error}</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
@@ -194,38 +210,52 @@ const Heroes = () => {
             }}
             placeholderTextColor={'#000'}
           />
-
-          {/* Filter Buttons */}
-          <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginTop: 10 }}>
+          <View style={{
+            flexDirection: 'row',
+            justifyContent: 'space-around',
+            marginTop: 20
+          }}>
             <TouchableOpacity onPress={() => handleFilterByType('')}>
-              <Text style={{ color: selectedType === '' ? '#000' : '#888' }}>All</Text>
+              <Text style={{ color: selectedType === '' ? '#000' : '#888',
+              fontSize:14
+               }}>All</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => handleFilterByType('Duelist')}>
-              <Text style={{ color: selectedType === 'Duelist' ? '#000' : '#888' }}>Duelist</Text>
+              <Text style={{ color: selectedType === 'Duelist' ? '#000' : '#888',
+                fontSize:14
+               }}>Duelist</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => handleFilterByType('Strategist')}>
-              <Text style={{ color: selectedType === 'Strategist' ? '#000' : '#888' }}>Strategist</Text>
+              <Text style={{ color: selectedType === 'Strategist' ? '#000' : '#888',
+                fontSize:14
+              }}>Strategist</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => handleFilterByType('Vanguard')}>
-              <Text style={{ color: selectedType === 'Vanguard' ? '#000' : '#888' }}>Vanguard</Text>
+              <Text style={{ color: selectedType === 'Vanguard' ? '#000' : '#888',
+                fontSize:14
+               }}>Vanguard</Text>
             </TouchableOpacity>
           </View>
         </View>
 
         <View style={{ padding: 10 }}>
           {filteredHeroes.map((hero) => (
-            <TouchableOpacity key={hero.id} style={{
-              width: '100%',
-              padding: 10,
-              position: 'relative'
-            }}>
+            <TouchableOpacity
+              key={hero.id}
+              style={{
+                width: '100%',
+                padding: 10,
+                position: 'relative'
+              }}
+              onPress={() => router.push(`/HeroDetail/${hero.name}`)}
+            >
               <Image
                 source={{ uri: hero.uri }}
                 style={{
                   width: '100%',
                   resizeMode: 'contain',
-                  height: 100, 
-                  borderRadius:200
+                  height: 90,
+                  borderRadius: 200
                 }}
               />
 
