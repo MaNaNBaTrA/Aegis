@@ -25,4 +25,7 @@ export const Colors = {
   },
   PRIMARY:'#fece2f',
   BLACK:'#000000',
+  ABILITIES:'#7b8fb0',
+  ABILITIESBG:'#e1e6ec',
+  ABILITIESTYPE:'#98a4c1'
 };
