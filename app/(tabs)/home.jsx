@@ -7,9 +7,10 @@ import Teams from '../../components/Teams';
 import Footer from '../../components/Footer';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from "../../configs/FirebaseConfig";
+import { useRouter } from 'expo-router';
 
 const Home = () => {
-
+  const router = useRouter();
   const [quote, setQuote] = useState('');
   const [hero, setHero] = useState('');
 
@@ -75,7 +76,7 @@ const Home = () => {
           >
             <Text
               style={{
-                fontFamily: 'Monsterrat-Medium',
+                fontFamily: 'Montserrat-Medium',
                 fontSize: 14,
                 color: '#444',
                 marginTop: 8,
@@ -86,7 +87,7 @@ const Home = () => {
 
             <Text
               style={{
-                fontFamily: 'Monsterrat-SemiBold',
+                fontFamily: 'Montserrat-SemiBold',
                 fontSize: 32,
                 color: '#000',
                 marginTop: 3,
@@ -106,7 +107,7 @@ const Home = () => {
             >
               <Text
                 style={{
-                  fontFamily: 'Monsterrat-Bold',
+                  fontFamily: 'Montserrat-Bold',
                   fontSize: 40,
                   position: 'absolute',
                   left: 0,
@@ -125,10 +126,11 @@ const Home = () => {
                   paddingHorizontal: 20,
                   paddingVertical: 10,
                 }}
+                onPress={()=>{router.push('/heroes')}}
               >
                 <Text
                   style={{
-                    fontFamily: 'Monsterrat-semiBold',
+                    fontFamily: 'Montserrat-semiBold',
                     fontSize: 16,
                     color: '#FFF',
                     textAlign: 'center',
@@ -141,7 +143,7 @@ const Home = () => {
 
             <Text
               style={{
-                fontFamily: 'Monsterrat-Medium',
+                fontFamily: 'Montserrat-Medium',
                 fontSize: 18,
                 marginTop: 14,
               }}
@@ -151,7 +153,7 @@ const Home = () => {
 
             <Text
               style={{
-                fontFamily: 'Monsterrat-Bold',
+                fontFamily: 'Montserrat-Bold',
                 fontSize: 20,
                 color: '#000',
                 marginTop: 3,

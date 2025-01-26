@@ -28,9 +28,9 @@ const Slider = () => {
         paddingHorizontal: 16,
       }}>
         <Text style={{
-          fontFamily: 'Monsterrat-Bold', 
+          fontFamily: 'Montserrat-Bold', 
           fontSize: 18,
-          marginBottom: 10,
+          marginBottom: 15,
           color: '#000'
         }}>
           Marvel Rivals

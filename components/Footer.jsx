@@ -16,7 +16,7 @@ const Footer = () => {
                 marginTop:20
             }}>
                 <Text style={{
-                    fontFamily: 'Monsterrat-Medium',
+                    fontFamily: 'Montserrat-Medium',
                     fontSize: 35,
                     color: 'transparent', 
                     textShadowColor: '#FFF', 
@@ -26,7 +26,7 @@ const Footer = () => {
                     Assemble your squad and rise to the challenge!
                 </Text>
                 <Text style={{
-                    fontFamily: 'Monsterrat-Medium',
+                    fontFamily: 'Montserrat-Medium',
                     fontSize: 35,
                     color: '#000', 
                     position: 'absolute', 
@@ -44,7 +44,7 @@ const Footer = () => {
                 marginVertical:10
             }}>
                 <Text style={{
-                    fontFamily:'Monsterrat-Medium'
+                    fontFamily:'Montserrat-Medium'
                 }}>© Crafter By Arthur</Text>
             </View>
         </View>

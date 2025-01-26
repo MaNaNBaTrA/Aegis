@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, Image, ScrollView, ImageBackgr
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../configs/FirebaseConfig';
 import { useRouter } from 'expo-router';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 const Heroes = () => {
   const router = useRouter();
@@ -91,7 +92,7 @@ const Heroes = () => {
           style={{
             color: '#fff',
             fontSize: 30,
-            fontFamily: 'Monsterrat-ExtraBoldItalic',
+            fontFamily: 'Montserrat-ExtraBoldItalic',
             textAlign: 'center',
             lineHeight: 32,
             top: 14
@@ -107,7 +108,7 @@ const Heroes = () => {
             style={{
               color: '#fff',
               fontSize: 30,
-              fontFamily: 'Monsterrat-ExtraBoldItalic',
+              fontFamily: 'Montserrat-ExtraBoldItalic',
               textAlign: 'center',
               lineHeight: 32,
             }}
@@ -118,7 +119,7 @@ const Heroes = () => {
             style={{
               color: '#fff',
               fontSize: 30,
-              fontFamily: 'Monsterrat-ExtraBoldItalic',
+              fontFamily: 'Montserrat-ExtraBoldItalic',
               textAlign: 'center',
               lineHeight: 32,
             }}
@@ -176,7 +177,7 @@ const Heroes = () => {
           }}
         >
           <Text style={{
-            fontFamily: 'Monsterrat-Medium',
+            fontFamily: 'Montserrat-Medium',
             fontSize: 14,
             color: '#444',
             marginTop: 8
@@ -185,7 +186,7 @@ const Heroes = () => {
           </Text>
 
           <Text style={{
-            fontFamily: 'Monsterrat-SemiBold',
+            fontFamily: 'Montserrat-SemiBold',
             fontSize: 32,
             color: '#000',
             marginTop: 3
@@ -194,46 +195,70 @@ const Heroes = () => {
           </Text>
 
           <Image source={require('../../assets/images/Marvel_Rival_Logo.png')} style={{ alignSelf: 'center' }} />
-
-          <TextInput
-            placeholder="Search for heroes"
-            value={searchQuery}
-            onChangeText={handleSearch}
-            style={{
-              borderWidth: 1,
-              borderColor: '#ccc',
-              marginTop: 10,
-              marginHorizontal: 10,
-              borderRadius: 30,
-              paddingLeft: 10,
-              backgroundColor: '#FFF',
-            }}
-            placeholderTextColor={'#000'}
-          />
+          <View style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            borderWidth: 1,
+            borderColor: '#ccc',
+            borderRadius: 30,
+            paddingHorizontal: 10,
+            backgroundColor: '#FFF',
+            marginTop: 10,
+            marginHorizontal: 10
+          }}>
+            
+            <TextInput
+              placeholder="Search for heroes"
+              value={searchQuery}
+              onChangeText={handleSearch}
+              style={{
+                flex: 1,
+                paddingVertical: 10,
+                paddingLeft: 10,
+                fontSize: 16,
+                color: '#000'
+              }}
+              placeholderTextColor="#999"
+            />
+            <Ionicons
+              name="search"
+              size={24}
+              color="black"
+              style={{ marginRight: 10 }}
+            />
+          </View>
           <View style={{
             flexDirection: 'row',
             justifyContent: 'space-around',
             marginTop: 20
           }}>
             <TouchableOpacity onPress={() => handleFilterByType('')}>
-              <Text style={{ color: selectedType === '' ? '#000' : '#888',
-              fontSize:14
-               }}>All</Text>
+              <Text style={{
+                color: selectedType === '' ? '#DC143C' : '#000',
+                fontSize: 14,
+                fontFamily:'Montserrat-Medium'
+              }}>All</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => handleFilterByType('Duelist')}>
-              <Text style={{ color: selectedType === 'Duelist' ? '#000' : '#888',
-                fontSize:14
-               }}>Duelist</Text>
+              <Text style={{
+                color: selectedType === 'Duelist' ? '#DC143C' : '#000',
+                fontSize: 14,
+                fontFamily:'Montserrat-Medium'
+              }}>Duelist</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => handleFilterByType('Strategist')}>
-              <Text style={{ color: selectedType === 'Strategist' ? '#000' : '#888',
-                fontSize:14
+              <Text style={{
+                color: selectedType === 'Strategist' ? '#DC143C' : '#000',
+                fontSize: 14,
+                fontFamily:'Montserrat-Medium'
               }}>Strategist</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => handleFilterByType('Vanguard')}>
-              <Text style={{ color: selectedType === 'Vanguard' ? '#000' : '#888',
-                fontSize:14
-               }}>Vanguard</Text>
+              <Text style={{
+                color: selectedType === 'Vanguard' ? '#DC143C' : '#000',
+                fontSize: 14,
+                fontFamily:'Montserrat-Medium'
+              }}>Vanguard</Text>
             </TouchableOpacity>
           </View>
         </View>

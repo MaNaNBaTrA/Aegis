@@ -9,9 +9,9 @@ const Updates = () => {
       position:'relative'
     }}>
       <Text style={{
-        fontFamily: 'Monsterrat-Bold',
+        fontFamily: 'Montserrat-Bold',
         fontSize: 18,
-        marginBottom: 2,
+        marginBottom: 15,
         color: '#000',
         zIndex:2
       }}>
@@ -21,7 +21,7 @@ const Updates = () => {
         style={{
           width: '100%',
           resizeMode: 'contain',
-          height:260,
+          height:220,
         }}
       />
       <Image
