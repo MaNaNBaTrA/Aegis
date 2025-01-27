@@ -1,4 +1,4 @@
-import { View, Text, Image, ImageBackground, ScrollView } from 'react-native';
+import { View, Text, Image, ImageBackground, ScrollView, TouchableOpacity } from 'react-native';
 import React, { useEffect } from 'react';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
 import { Colors } from '../../constants/Colors';
@@ -114,14 +114,16 @@ const HeroDetail = () => {
         source={require('../Demoassets/Abilities_Bg.jpg')} style={{
           width: '100%',
           zIndex: 0,
-          height: '100%'
+          height: '100%',
+          flex: 1
         }}
         resizeMode='stretch'>
         <View
           style={{
             display: 'flex',
             gap: 8,
-            marginTop: 6
+            marginTop: 6,
+            flex: 1
           }}
         >
           <Text style={{
@@ -155,47 +157,400 @@ const HeroDetail = () => {
                     paddingVertical: 4
                   }}
                 >NORMAL ATTACK</Text>
+                <TouchableOpacity>
+                  <View style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    paddingHorizontal: 8
+                  }}>
+                    <View style={{
+                      width: '15%',
+                      alignItems: 'center'
+                    }}>
+                      <Image
+                        source={require('../Demoassets/Left_Mouse.png')}
+                      />
+                    </View>
+
+                    <View style={{
+                      width: 1,
+                      height: '80%',
+                      backgroundColor: Colors.ABILITIES,
+                      marginHorizontal: 10,
+                    }} />
+                    <View style={{
+                      width: '40%',
+                      alignItems: 'center'
+                    }}>
+                      <Image
+                        source={require('../Demoassets/NATTACK.png')}
+                      />
+                    </View>
+
+                    <View style={{
+                      width: 1,
+                      height: '80%',
+                      backgroundColor: Colors.ABILITIES,
+                      marginHorizontal: 10,
+                    }} />
+                    <View style={{
+                      width: '35%',
+                      alignItems: 'center'
+                    }}>
+                      <Text style={{
+                        fontFamily: "Montserrat-SemiBold",
+                      }}>QUANTUM MAGIC</Text>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+
+              </View>
+              <View
+                style={{
+                  width: '90%',
+                  zIndex: 2,
+                  backgroundColor: Colors.ABILITIESBG
+                }}
+              >
+                <Text
+                  style={{
+                    backgroundColor: Colors.ABILITIESTYPE,
+                    fontFamily: "Montserrat-SemiBold",
+                    paddingLeft: 8,
+                    fontSize: 14,
+                    paddingVertical: 4
+                  }}
+                >ABILITIES</Text>
+                <TouchableOpacity>
+                  <View style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    paddingHorizontal: 8,
+                    borderBottomWidth: 1,
+                    borderBottomColor: Colors.ABILITIES
+                  }}>
+                    <View style={{
+                      width: '15%',
+                      alignItems: 'center'
+                    }}>
+                      <Text style={{
+                        fontFamily: 'Montserrat-SemiBold',
+                        fontSize: 16,
+                      }}>Q</Text>
+                    </View>
+
+                    <View style={{
+                      width: 1,
+                      height: '80%',
+                      backgroundColor: Colors.ABILITIES,
+                      marginHorizontal: 10,
+                    }} />
+                    <View style={{
+                      width: '40%',
+                      alignItems: 'center'
+                    }}>
+                      <Image
+                        source={require('../Demoassets/QATTACK.png')}
+                      />
+                    </View>
+
+                    <View style={{
+                      width: 1,
+                      height: '80%',
+                      backgroundColor: Colors.ABILITIES,
+                      marginHorizontal: 10,
+                    }} />
+                    <View style={{
+                      width: '35%',
+                      alignItems: 'center',
+                    }}>
+                      <Text style={{
+                        fontFamily: "Montserrat-SemiBold",
+                      }}>KARMIC REVIVAL</Text>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity>
+                  <View style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    paddingHorizontal: 8,
+                    borderBottomWidth: 1,
+                    borderBottomColor: Colors.ABILITIES
+                  }}>
+                    <View style={{
+                      width: '15%',
+                      alignItems: 'center'
+                    }}>
+                      <Text style={{
+                        fontFamily: 'Montserrat-SemiBold',
+                        fontSize: 16,
+                      }}>SHIFT</Text>
+                    </View>
+
+                    <View style={{
+                      width: 1,
+                      height: '80%',
+                      backgroundColor: Colors.ABILITIES,
+                      marginHorizontal: 10,
+                    }} />
+                    <View style={{
+                      width: '40%',
+                      alignItems: 'center'
+                    }}>
+                      <Image
+                        source={require('../Demoassets/SHIFTATTACK.png')}
+                      />
+                    </View>
+
+                    <View style={{
+                      width: 1,
+                      height: '80%',
+                      backgroundColor: Colors.ABILITIES,
+                      marginHorizontal: 10,
+                    }} />
+                    <View style={{
+                      width: '35%',
+                      alignItems: 'center'
+                    }}>
+                      <Text style={{
+                        fontFamily: "Montserrat-SemiBold",
+                      }}>SOUL BOND</Text>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity>
+                  <View style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    paddingHorizontal: 8,
+                    borderBottomWidth: 1,
+                    borderBottomColor: Colors.ABILITIES
+                  }}>
+                    <View style={{
+                      width: '15%',
+                      alignItems: 'center'
+                    }}>
+                      <Text style={{
+                        fontFamily: 'Montserrat-SemiBold',
+                        fontSize: 16,
+                      }}>E</Text>
+                    </View>
+
+                    <View style={{
+                      width: 1,
+                      height: '80%',
+                      backgroundColor: Colors.ABILITIES,
+                      marginHorizontal: 10,
+                    }} />
+                    <View style={{
+                      width: '40%',
+                      alignItems: 'center'
+                    }}>
+                      <Image
+                        source={require('../Demoassets/EATTACK.png')}
+                      />
+                    </View>
+
+                    <View style={{
+                      width: 1,
+                      height: '80%',
+                      backgroundColor: Colors.ABILITIES,
+                      marginHorizontal: 10,
+                    }} />
+                    <View style={{
+                      width: '35%',
+                      alignItems: 'center'
+                    }}>
+                      <Text style={{
+                        fontFamily: "Montserrat-SemiBold",
+                        textAlign: 'center'
+                      }}>AVATAR LIFE STREAM</Text>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity>
+                  <View style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    paddingHorizontal: 8,
+                    borderBottomWidth: 1,
+                    borderBottomColor: Colors.ABILITIES
+                  }}>
+                    <View style={{
+                      width: '15%',
+                      alignItems: 'center'
+                    }}>
+                      <Image
+                        source={require('../Demoassets/Right_Mouse.png')}
+                      />
+                    </View>
+
+                    <View style={{
+                      width: 1,
+                      height: '80%',
+                      backgroundColor: Colors.ABILITIES,
+                      marginHorizontal: 10,
+                    }} />
+                    <View style={{
+                      width: '40%',
+                      alignItems: 'center'
+                    }}>
+                      <Image
+                        source={require('../Demoassets/RIGHTMATTACK.png')}
+                      />
+                    </View>
+
+                    <View style={{
+                      width: 1,
+                      height: '80%',
+                      backgroundColor: Colors.ABILITIES,
+                      marginHorizontal: 10,
+                    }} />
+                    <View style={{
+                      width: '35%',
+                      alignItems: 'center'
+                    }}>
+                      <Text style={{
+                        fontFamily: "Montserrat-SemiBold",
+                      }}>COSMIC CLUSTER</Text>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity>
+
+                  <View style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    paddingHorizontal: 8,
+                    borderBottomWidth: 1,
+                    borderBottomColor: Colors.ABILITIES
+                  }}>
+                    <View style={{
+                      width: '15%',
+                      alignItems: 'center',
+                    }}>
+                      <Text style={{
+                        fontFamily: 'Montserrat-SemiBold',
+                        fontSize: 13,
+                      }}>PASSIVE</Text>
+                    </View>
+
+                    <View style={{
+                      width: 1,
+                      height: '80%',
+                      backgroundColor: Colors.ABILITIES,
+                      marginHorizontal: 10,
+                    }} />
+                    <View style={{
+                      width: '40%',
+                      alignItems: 'center'
+                    }}>
+                      <Image
+                        source={require('../Demoassets/PASSIVE.png')}
+                      />
+                    </View>
+
+                    <View style={{
+                      width: 1,
+                      height: '80%',
+                      backgroundColor: Colors.ABILITIES,
+                      marginHorizontal: 10,
+                    }} />
+                    <View style={{
+                      width: '35%',
+                      alignItems: 'center',
+                    }}>
+                      <Text style={{
+                        fontFamily: "Montserrat-SemiBold",
+                        textAlign: 'center'
+                      }}>REGENERATIVE COCOON</Text>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+
+              </View>
+
+              <View
+                style={{
+                  width: '90%',
+                  zIndex: 2,
+                  backgroundColor: Colors.ABILITIESBG,
+                  marginBottom: 20
+                }}
+              >
+                <Text
+                  style={{
+                    backgroundColor: Colors.ABILITIESTYPE,
+                    fontFamily: "Montserrat-SemiBold",
+                    paddingLeft: 8,
+                    fontSize: 14,
+                    paddingVertical: 4
+                  }}
+                >TEAM-UP ABILITIES</Text>
+                <TouchableOpacity>
                 <View style={{
                   display: 'flex',
                   flexDirection: 'row',
                   alignItems: 'center',
-                  justifyContent: 'space-evenly',
-                  paddingHorizontal:8
+                  paddingHorizontal: 8
                 }}>
-                  <Image
-                    source={require('../Demoassets/Left_Mouse.png')}
-
-                  />
+                  <View style={{
+                    width: '15%',
+                    alignItems: 'center',
+                  }}>
+                    <Text style={{
+                      fontFamily: 'Montserrat-SemiBold',
+                      fontSize: 13,
+                    }}>PASSIVE</Text>
+                  </View>
 
                   <View style={{
                     width: 1,
-                    height: '100%',
-                    backgroundColor: 'black',
+                    height: '80%',
+                    backgroundColor: Colors.ABILITIES,
                     marginHorizontal: 10,
                   }} />
-
-                  <Image
-                    source={require('../Demoassets/NATTACK.png')}
-                  />
+                  <View style={{
+                    width: '40%',
+                    alignItems: 'center'
+                  }}>
+                    <Image
+                      source={require('../Demoassets/TEAMUP.png')}
+                    />
+                  </View>
 
                   <View style={{
                     width: 1,
-                    height:'100%',
-                    backgroundColor: 'black',
+                    height: '80%',
+                    backgroundColor: Colors.ABILITIES,
                     marginHorizontal: 10,
                   }} />
-
-                  <Text style={{
-                    fontFamily: "Montserrat-SemiBold",
-                  }}>QUANTUM MAGIC</Text>
+                  <View style={{
+                    width: '35%',
+                    alignItems: 'center'
+                  }}>
+                    <Text style={{
+                      fontFamily: "Montserrat-SemiBold",
+                      textAlign: 'center'
+                    }}>SOUL PERSEVERANCE</Text>
+                  </View>
                 </View>
+                </TouchableOpacity>
 
               </View>
+
             </View>
           </ScrollView>
         </View>
-      </ImageBackground>
-    </View>
+      </ImageBackground >
+    </View >
   )
 }
 
