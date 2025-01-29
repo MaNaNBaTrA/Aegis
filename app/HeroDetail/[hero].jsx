@@ -1,8 +1,11 @@
-import { View, Text, Image, ImageBackground, ScrollView, TouchableOpacity,ActivityIndicator } from 'react-native';
+import { View, Text, Image, ImageBackground, ScrollView, TouchableOpacity, ActivityIndicator, Animated, Dimensions } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useLocalSearchParams } from 'expo-router';
 import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
 import { Colors } from '../../constants/Colors';
+
+
+const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 const renderShortcut = (shortcut) => {
   if (shortcut === 'PASSIVE') {
@@ -18,13 +21,13 @@ const renderShortcut = (shortcut) => {
   }
 };
 
-const AbilitiesSection = ({ sectionTitle, data }) => {
+const AbilitiesSection = ({ sectionTitle, data, onPressAbility }) => {
   if (!data || data.length === 0) {
     return null;
   }
 
   return (
-    <View style={{ width: '90%', zIndex: 2, backgroundColor: Colors.ABILITIESBG }}>
+    <View style={{ width: '90%', zIndex: 2, backgroundColor: Colors.ABILITIESBG, marginBottom: 12 }}>
       <Text
         style={{
           backgroundColor: Colors.ABILITIESTYPE,
@@ -38,7 +41,7 @@ const AbilitiesSection = ({ sectionTitle, data }) => {
       </Text>
 
       {data.map((item, index) => (
-        <TouchableOpacity key={index}>
+        <TouchableOpacity key={index} onPress={() => onPressAbility(item)}>
           <View
             style={{
               display: 'flex',
@@ -79,8 +82,10 @@ const AbilitiesSection = ({ sectionTitle, data }) => {
 const HeroDetail = () => {
   const { hero } = useLocalSearchParams();
   const [heroDetails, setHeroDetails] = useState(null);
-  const [loading, setLoading] = useState(true);  
-  const [noData, setNoData] = useState(false); 
+  const [loading, setLoading] = useState(true);
+  const [noData, setNoData] = useState(false);
+  const [selectedAbility, setSelectedAbility] = useState(null);
+  const slideUpAnim = useState(new Animated.Value(SCREEN_HEIGHT))[0]; 
 
   useEffect(() => {
     const fetchHeroDetails = async () => {
@@ -93,13 +98,13 @@ const HeroDetail = () => {
         if (!querySnapshot.empty) {
           const docData = querySnapshot.docs[0].data();
           setHeroDetails(docData);
-          setNoData(false); 
+          setNoData(false);
         } else {
-          setNoData(true); 
+          setNoData(true);
         }
       } catch (error) {
         console.error("Error getting documents: ", error);
-        setNoData(true); 
+        setNoData(true);
       } finally {
         setLoading(false);
       }
@@ -107,6 +112,25 @@ const HeroDetail = () => {
 
     fetchHeroDetails();
   }, [hero]);
+
+  const openAbilityDetails = (ability) => {
+    setSelectedAbility(ability);
+    Animated.timing(slideUpAnim, {
+      toValue: 0, 
+      duration: 500,
+      useNativeDriver: true 
+    }).start();
+  };
+  
+  const closeAbilityDetails = () => {
+    Animated.timing(slideUpAnim, {
+      toValue: SCREEN_HEIGHT / 2,
+      duration: 500,
+      useNativeDriver: true
+    }).start(() => {
+      setSelectedAbility(null); 
+    });
+  };
 
   if (loading) {
     return (
@@ -127,10 +151,9 @@ const HeroDetail = () => {
 
   const { Normal_Attack, ABILITIES, 'TEAM-UP ABILITIES': TEAM_UP_ABILITIES } = heroDetails;
 
-
   return (
     <View style={{ width: '100%', height: '100%', display: 'flex' }}>
-      <View style={{ display: 'flex', width: '100%', height: '50%', position: 'relative' }}>
+       <View style={{ display: 'flex', width: '100%', height: '50%', position: 'relative' }}>
         <ImageBackground
           source={{ uri: heroDetails.Character_Bg }}
           style={{ width: '100%', height: '100%', zIndex: 0 }}
@@ -163,7 +186,7 @@ const HeroDetail = () => {
         style={{ width: '100%', zIndex: 0, height: '100%', flex: 1 }}
         resizeMode="stretch"
       >
-        <View style={{ display: 'flex', gap: 8, marginTop: 6, flex: 1 }}>
+        <View style={{ display: 'flex', gap: 8, marginTop: 6, flex: 1, marginBottom: 12 }}>
           <Text
             style={{
               fontSize: 30,
@@ -179,13 +202,44 @@ const HeroDetail = () => {
 
           <ScrollView>
             <View style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 8 }}>
-              <AbilitiesSection sectionTitle="NORMAL ATTACK" data={Normal_Attack} />
-              <AbilitiesSection sectionTitle="ABILITIES" data={ABILITIES} />
-              <AbilitiesSection sectionTitle="TEAM-UP ABILITIES" data={TEAM_UP_ABILITIES} />
+              <AbilitiesSection sectionTitle="NORMAL ATTACK" data={Normal_Attack} onPressAbility={openAbilityDetails} />
+              <AbilitiesSection sectionTitle="ABILITIES" data={ABILITIES} onPressAbility={openAbilityDetails} />
+              <AbilitiesSection sectionTitle="TEAM-UP ABILITIES" data={TEAM_UP_ABILITIES} onPressAbility={openAbilityDetails} />
             </View>
           </ScrollView>
         </View>
       </ImageBackground>
+
+      {selectedAbility && (
+        <Animated.View style={{
+          position: 'absolute',
+          bottom: 0, 
+          left: 0,
+          right: 0,
+          height: SCREEN_HEIGHT / 2, 
+          backgroundColor: Colors.ABILITIESBG,
+          padding: 16,
+          zIndex: 3,
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20,
+          transform: [{ translateY: slideUpAnim }]
+        }}>
+          <TouchableOpacity onPress={closeAbilityDetails}>
+            <Text style={{ alignSelf: 'flex-end', fontSize: 18, fontWeight: 'bold', color: 'white' }}>Close</Text>
+          </TouchableOpacity>
+          <Text style={{ fontSize: 24, fontFamily: 'Montserrat-ExtraBoldItalic', color: 'white', marginBottom: 16 }}>
+            {selectedAbility.Attack_Name}
+          </Text>
+          <Image
+            source={{ uri: selectedAbility.Image }}
+            style={{ width: '100%', height: 150, marginBottom: 16 }}
+            resizeMode="contain"
+          />
+          <Text style={{ fontSize: 16, color: 'white' }}>
+            {selectedAbility.Description || "Details about the attack will be shown here."}
+          </Text>
+        </Animated.View>
+      )}
     </View>
   );
 };
