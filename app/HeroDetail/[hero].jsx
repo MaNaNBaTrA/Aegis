@@ -85,7 +85,7 @@ const HeroDetail = () => {
   const [loading, setLoading] = useState(true);
   const [noData, setNoData] = useState(false);
   const [selectedAbility, setSelectedAbility] = useState(null);
-  const slideUpAnim = useState(new Animated.Value(SCREEN_HEIGHT))[0]; 
+  const slideUpAnim = useState(new Animated.Value(SCREEN_HEIGHT))[0];
 
   useEffect(() => {
     const fetchHeroDetails = async () => {
@@ -116,19 +116,19 @@ const HeroDetail = () => {
   const openAbilityDetails = (ability) => {
     setSelectedAbility(ability);
     Animated.timing(slideUpAnim, {
-      toValue: 0, 
+      toValue: 0,
       duration: 500,
-      useNativeDriver: true 
+      useNativeDriver: true
     }).start();
   };
-  
+
   const closeAbilityDetails = () => {
     Animated.timing(slideUpAnim, {
       toValue: SCREEN_HEIGHT / 2,
       duration: 500,
       useNativeDriver: true
     }).start(() => {
-      setSelectedAbility(null); 
+      setSelectedAbility(null);
     });
   };
 
@@ -149,37 +149,157 @@ const HeroDetail = () => {
     );
   }
 
+  const renderHeroName = (name) => {
+    const nameParts = name.split(' ');
+    if (nameParts.length === 1) {
+      return (
+        <Text
+          style={{
+            fontSize: 30,
+            fontFamily: 'Montserrat-ExtraBoldItalic',
+            lineHeight: 32,
+            zIndex: 2,
+            paddingLeft: 20,
+          }}
+        >
+          {nameParts[0]}
+        </Text>
+      );
+    } else if (nameParts.length === 2) {
+      return (
+        <>
+          <Text
+            style={{
+              fontSize: 30,
+              fontFamily: 'Montserrat-ExtraBoldItalic',
+              lineHeight: 32,
+              zIndex: 2,
+              paddingLeft: 20,
+            }}
+          >
+            {nameParts[0]}
+          </Text>
+          <Text
+            style={{
+              fontSize: 30,
+              fontFamily: 'Montserrat-ExtraBoldItalic',
+              textAlign: 'right',
+              lineHeight: 32,
+              zIndex: 2,
+              paddingLeft: 20,
+            }}
+          >
+            {nameParts[1]}
+          </Text>
+
+        </>
+      );
+    }
+  };
+
+ const renderType =(type)=>{ 
+  if (heroDetails.type == 'STRATEGIST') {
+    return (
+      <>
+        <Image
+          source={require('../../assets/images/Strategist.png')} />
+      </>
+    )
+  }
+  else if (heroDetails.type == 'VANGUARD') {
+    return (
+      <Image
+        source={require('../../assets/images/Vanguard.png')}
+      />
+    )
+  }
+else{
+  return(
+    <Image
+    source={require('../../assets/images/Duelist.png')}
+    />
+  )
+}}
+
+
   const { Normal_Attack, ABILITIES, 'TEAM-UP ABILITIES': TEAM_UP_ABILITIES } = heroDetails;
 
   return (
-    <View style={{ width: '100%', height: '100%', display: 'flex' }}>
-       <View style={{ display: 'flex', width: '100%', height: '50%', position: 'relative' }}>
+    <View style={{
+      width: '100%',
+      height: '100%',
+      display: 'flex'
+    }}>
+      <View style={{
+        display: 'flex',
+        width: '100%',
+        height: '50%',
+        position: 'relative'
+      }}>
         <ImageBackground
-          source={{ uri: heroDetails.Character_Bg }}
-          style={{ width: '100%', height: '100%', zIndex: 0 }}
-        >
-          <View style={{ marginTop: '20%', display: 'flex', gap: 4, width: '50%', position: 'absolute' }}>
-            <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-end', gap: 12, marginBottom: 24, paddingLeft: 20 }}>
-              <Image source={{ uri: heroDetails.Character }} />
-              <Text style={{ fontSize: 24, fontFamily: 'Montserrat-ExtraBoldItalic', textAlign: 'center' }}>
-                {heroDetails.type}
-              </Text>
+          source={require('../../assets/images/Home.png')} style={{
+            width: '100%',
+            height: '100%',
+            zIndex: 0
+          }}>
+          <View style={{
+            marginTop: '20%',
+            display: 'flex',
+            gap: 4,
+            width: '50%',
+            position: 'absolute'
+          }}>
+            <View style={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'flex-end',
+              gap: 12,
+              marginBottom: 24,
+              paddingLeft: 20,
+            }}>
+              {renderType(heroDetails.type)}
+              <Text
+                style={{
+                  fontSize: 24,
+                  fontFamily: 'Montserrat-ExtraBoldItalic',
+                  textAlign: 'center'
+                }}
+              >{heroDetails.type}</Text>
             </View>
-            <Text style={{ fontSize: 30, fontFamily: 'Montserrat-ExtraBoldItalic', lineHeight: 32, zIndex: 2, paddingLeft: 20 }}>
-              {heroDetails.name}
-            </Text>
+            {renderHeroName(heroDetails.name)}
           </View>
           <ImageBackground
             source={{ uri: heroDetails.Character_Bg }}
-            style={{ width: '100%', height: '100%', zIndex: 1, display: 'flex', alignItems: 'flex-end' }}
-          >
+            style={{
+              width: '100%',
+              height: '100%',
+              zIndex: 1,
+              display: 'flex',
+              alignItems: 'flex-end'
+            }}>
+
             <Image
               source={{ uri: heroDetails.Character }}
-              resizeMode="cover"
-              style={{ width: 230, height: '95%', marginRight: 30, zIndex: 1 }}
+              resizeMode='cover'
+              style={{
+                width: 230,
+                height: '95%',
+                marginRight: 30,
+                zIndex: 1,
+              }}
             />
           </ImageBackground>
         </ImageBackground>
+        <Image
+          source={require('../Demoassets/Bg_Component1.png')}
+          style={{
+            width: '100%',
+            height: 60,
+            position: 'absolute',
+            bottom: -10,
+          }}
+          resizeMode='contain'
+        />
       </View>
       <ImageBackground
         source={require('../Demoassets/Abilities_Bg.jpg')}
@@ -213,10 +333,10 @@ const HeroDetail = () => {
       {selectedAbility && (
         <Animated.View style={{
           position: 'absolute',
-          bottom: 0, 
+          bottom: 0,
           left: 0,
           right: 0,
-          height: SCREEN_HEIGHT / 2, 
+          height: SCREEN_HEIGHT / 2,
           backgroundColor: Colors.ABILITIESBG,
           padding: 16,
           zIndex: 3,
