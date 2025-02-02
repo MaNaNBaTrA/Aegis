@@ -197,29 +197,30 @@ const HeroDetail = () => {
     }
   };
 
- const renderType =(type)=>{ 
-  if (heroDetails.type == 'STRATEGIST') {
-    return (
-      <>
+  const renderType = (type) => {
+    if (heroDetails.type == 'STRATEGIST') {
+      return (
+        <>
+          <Image
+            source={require('../../assets/images/Strategist.png')} />
+        </>
+      )
+    }
+    else if (heroDetails.type == 'VANGUARD') {
+      return (
         <Image
-          source={require('../../assets/images/Strategist.png')} />
-      </>
-    )
+          source={require('../../assets/images/Vanguard.png')}
+        />
+      )
+    }
+    else {
+      return (
+        <Image
+          source={require('../../assets/images/Duelist.png')}
+        />
+      )
+    }
   }
-  else if (heroDetails.type == 'VANGUARD') {
-    return (
-      <Image
-        source={require('../../assets/images/Vanguard.png')}
-      />
-    )
-  }
-else{
-  return(
-    <Image
-    source={require('../../assets/images/Duelist.png')}
-    />
-  )
-}}
 
 
   const { Normal_Attack, ABILITIES, 'TEAM-UP ABILITIES': TEAM_UP_ABILITIES } = heroDetails;
@@ -331,34 +332,37 @@ else{
       </ImageBackground>
 
       {selectedAbility && (
-        <Animated.View style={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          height: SCREEN_HEIGHT / 2,
-          backgroundColor: Colors.ABILITIESBG,
-          padding: 16,
-          zIndex: 3,
-          borderTopLeftRadius: 20,
-          borderTopRightRadius: 20,
-          transform: [{ translateY: slideUpAnim }]
-        }}>
-          <TouchableOpacity onPress={closeAbilityDetails}>
-            <Text style={{ alignSelf: 'flex-end', fontSize: 18, fontWeight: 'bold', color: 'white' }}>Close</Text>
-          </TouchableOpacity>
-          <Text style={{ fontSize: 24, fontFamily: 'Montserrat-ExtraBoldItalic', color: 'white', marginBottom: 16 }}>
-            {selectedAbility.Attack_Name}
-          </Text>
-          <Image
-            source={{ uri: selectedAbility.Image }}
-            style={{ width: '100%', height: 150, marginBottom: 16 }}
-            resizeMode="contain"
-          />
-          <Text style={{ fontSize: 16, color: 'white' }}>
-            {selectedAbility.Description || "Details about the attack will be shown here."}
-          </Text>
-        </Animated.View>
+        <ImageBackground
+        source={require('../Demoassets/Abilities_Bg.jpg')}
+        style={{
+          width:'100%',
+          height:SCREEN_HEIGHT/2
+        }}
+        resizeMode="stretch"
+      >
+          <Animated.View style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: SCREEN_HEIGHT / 2,
+            padding: 16,
+            zIndex: 3,
+            borderTopLeftRadius: 20,
+            borderTopRightRadius: 20,
+            transform: [{ translateY: slideUpAnim }]
+          }}>
+            <TouchableOpacity onPress={closeAbilityDetails}>
+              <Text style={{ alignSelf: 'flex-end', fontSize: 18, fontWeight: 'bold', color: 'white' }}>Close</Text>
+            </TouchableOpacity>
+            <Text style={{ fontSize: 24, fontFamily: 'Montserrat-ExtraBoldItalic', color: 'white', marginBottom: 16 }}>
+              {selectedAbility.Attack_Name}
+            </Text>
+            <Text style={{ fontSize: 16, color: 'white' }}>
+              {selectedAbility.Description || "Details about the attack will be shown here."}
+            </Text>
+          </Animated.View>
+        </ImageBackground>
       )}
     </View>
   );
