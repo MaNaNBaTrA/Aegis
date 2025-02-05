@@ -53,13 +53,13 @@ const AbilitiesSection = ({ sectionTitle, data, onPressAbility }) => {
             }}
           >
             <View style={{ width: '15%', alignItems: 'center' }}>
-              {renderShortcut(item.Key)}
+              {renderShortcut(item.key)}
             </View>
 
             <View style={{ width: 1, height: '80%', backgroundColor: Colors.ABILITIES, marginHorizontal: 10 }} />
 
             <View style={{ width: '40%', alignItems: 'center' }}>
-              <Image source={{ uri: item.Image }} style={{
+              <Image source={{ uri: item.image }} style={{
                 width: 200,
                 height: 50
               }}
@@ -70,7 +70,7 @@ const AbilitiesSection = ({ sectionTitle, data, onPressAbility }) => {
             <View style={{ width: 1, height: '80%', backgroundColor: Colors.ABILITIES, marginHorizontal: 10 }} />
 
             <View style={{ width: '35%', alignItems: 'center' }}>
-              <Text style={{ fontFamily: 'Montserrat-SemiBold', textAlign: 'center' }}>{item.Attack_Name}</Text>
+              <Text style={{ fontFamily: 'Montserrat-SemiBold', textAlign: 'center' }}>{item.attack}</Text>
             </View>
           </View>
         </TouchableOpacity>
@@ -223,7 +223,7 @@ const HeroDetail = () => {
   }
 
 
-  const { Normal_Attack, ABILITIES, 'TEAM-UP ABILITIES': TEAM_UP_ABILITIES } = heroDetails;
+  const { 'NORMAL ATTACK': Normal_Attack, ABILITIES, 'TEAM-UP ABILITIES': TEAM_UP_ABILITIES } = heroDetails;
 
   return (
     <View style={{
@@ -270,7 +270,7 @@ const HeroDetail = () => {
             {renderHeroName(heroDetails.name)}
           </View>
           <ImageBackground
-            source={{ uri: heroDetails.Character_Bg }}
+            source={{ uri: heroDetails.character_bg }}
             style={{
               width: '100%',
               height: '100%',
@@ -280,7 +280,7 @@ const HeroDetail = () => {
             }}>
 
             <Image
-              source={{ uri: heroDetails.Character }}
+              source={{ uri: heroDetails.character }}
               resizeMode='cover'
               style={{
                 width: 230,
@@ -355,12 +355,7 @@ const HeroDetail = () => {
             <TouchableOpacity onPress={closeAbilityDetails}>
               <Text style={{ alignSelf: 'flex-end', fontSize: 18, fontWeight: 'bold', color: 'white' }}>Close</Text>
             </TouchableOpacity>
-            <Text style={{ fontSize: 24, fontFamily: 'Montserrat-ExtraBoldItalic', color: 'white', marginBottom: 16 }}>
-              {selectedAbility.Attack_Name}
-            </Text>
-            <Text style={{ fontSize: 16, color: 'white' }}>
-              {selectedAbility.Description || "Details about the attack will be shown here."}
-            </Text>
+           
           </Animated.View>
         </ImageBackground>
       )}
