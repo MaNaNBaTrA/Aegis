@@ -21,6 +21,30 @@ const renderShortcut = (shortcut) => {
   }
 };
 
+const renderAniShortcut = (shortcut) => {
+  if (shortcut === 'PASSIVE') {
+    return (
+      <Text style={{ fontFamily: 'Montserrat-SemiBold', fontSize: 13 }}>PASSIVE</Text>
+    );
+  } else if (typeof shortcut === 'string' && shortcut.includes('.')) {
+    return <Image source={{ uri: shortcut }} style={{ width: 24, height: 24 }} />;
+  } else if (typeof shortcut === 'number') {
+    return <Image source={shortcut} />;
+  } else {
+    return (
+      <ImageBackground source={require('../../assets/images/AbilityKeyBg.png')} resizeMode='contain'
+        style={{
+          width: '60',
+          alignItems: 'center',
+          display: 'flex',
+          justifyContent: 'center'
+        }}>
+        <Text style={{ fontFamily: 'Montserrat-SemiBold', fontSize: 16, }}>{shortcut}</Text>
+      </ImageBackground>
+    );
+  }
+};
+
 const AbilitiesSection = ({ sectionTitle, data, onPressAbility }) => {
   if (!data || data.length === 0) {
     return null;
@@ -98,6 +122,7 @@ const HeroDetail = () => {
         if (!querySnapshot.empty) {
           const docData = querySnapshot.docs[0].data();
           setHeroDetails(docData);
+          console.log(heroDetails)
           setNoData(false);
         } else {
           setNoData(true);
@@ -148,6 +173,7 @@ const HeroDetail = () => {
       </View>
     );
   }
+
 
   const renderHeroName = (name) => {
     const nameParts = name.split(' ');
@@ -321,7 +347,8 @@ const HeroDetail = () => {
             ABILITIES
           </Text>
 
-          <ScrollView>
+          <ScrollView showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}>
             <View style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 8 }}>
               <AbilitiesSection sectionTitle="NORMAL ATTACK" data={Normal_Attack} onPressAbility={openAbilityDetails} />
               <AbilitiesSection sectionTitle="ABILITIES" data={ABILITIES} onPressAbility={openAbilityDetails} />
@@ -333,30 +360,157 @@ const HeroDetail = () => {
 
       {selectedAbility && (
         <ImageBackground
-        source={require('../Demoassets/Abilities_Bg.jpg')}
-        style={{
-          width:'100%',
-          height:SCREEN_HEIGHT/2
-        }}
-        resizeMode="stretch"
-      >
-          <Animated.View style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: SCREEN_HEIGHT / 2,
-            padding: 16,
-            zIndex: 3,
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
-            transform: [{ translateY: slideUpAnim }]
-          }}>
+          source={require('../Demoassets/Abilities_Bg.jpg')}
+          style={{
+            width: '100%',
+            height: SCREEN_HEIGHT / 2
+          }}
+          resizeMode="stretch"
+        >
+          <Animated.View
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: SCREEN_HEIGHT / 2,
+              padding: 16,
+              zIndex: 3,
+              borderTopLeftRadius: 20,
+              borderTopRightRadius: 20,
+              transform: [{ translateY: slideUpAnim }],
+            }}
+          >
             <TouchableOpacity onPress={closeAbilityDetails}>
-              <Text style={{ alignSelf: 'flex-end', fontSize: 18, fontWeight: 'bold', color: 'white' }}>Close</Text>
+              <Text style={{ alignSelf: 'flex-end', fontSize: 18, fontWeight: 'bold', color: 'white' }}>
+                Close
+              </Text>
             </TouchableOpacity>
-           
+
+            <ScrollView
+            showsHorizontalScrollIndicator={false}
+            showsVerticalScrollIndicator={false}
+              contentContainerStyle={{
+                flexGrow: 1,
+                
+              }}
+            >
+              <View
+                style={{
+                  width: '97%',
+                  marginTop: 10,
+                  display: 'flex',
+                  alignItems: 'center',
+                  borderWidth: 1,
+                  borderColor: 'white',
+                  paddingBottom:10,
+                  marginBottom:40
+                }}
+              >
+                <View
+                  style={{
+                    backgroundColor: 'white',
+                    padding: 10,
+                    width: '100%',
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontFamily: 'Montserrat-SemiBold',
+                      fontSize: 22,
+                    }}
+                  >
+                    {selectedAbility.attack}
+                  </Text>
+
+                  <View
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      gap: 12,
+                      width: '100%',
+                    }}
+                  >
+                    {renderAniShortcut(selectedAbility.key)}
+                    <View
+                      style={{
+                        width: '85%',
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontFamily: 'Montserrat-Medium',
+                          fontSize: 13,
+                        }}
+                      >
+                        {selectedAbility.desc}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+
+                <View
+                  style={{
+                    padding: 10,
+                    width: '100%',
+                    marginTop: 10,
+                  }}
+                >
+                  {selectedAbility.details && typeof selectedAbility.details === 'object' ? (
+                    Object.entries(selectedAbility.details).map(([key, value], index) => (
+                      <View
+                        key={index}
+                        style={{
+                          marginBottom: 8,
+                          display: 'flex',
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                          gap: 4,
+                          width: '100%',
+                        }}
+                      >
+                        <Text
+                          style={{
+                            fontFamily: 'Montserrat-SemiBold',
+                            fontSize: 14,
+                            color: 'gray',
+                            width: '30%',
+                          }}
+                        >
+                          {key}:
+                        </Text>
+                        <Text
+                          style={{
+                            fontFamily: 'Montserrat-Regular',
+                            fontSize: 14,
+                            color: 'gray',
+                            width: '65%',
+                            flexWrap: 'wrap',
+                          }}
+                          numberOfLines={0}
+                        >
+                          {value}
+                        </Text>
+                      </View>
+                    ))
+                  ) : (
+                    <Text
+                      style={{
+                        fontFamily: 'Montserrat-Regular',
+                        fontSize: 14,
+                        color: 'gray',
+                      }}
+                    >
+                      No details available
+                    </Text>
+                  )}
+                </View>
+              </View>
+            </ScrollView>
           </Animated.View>
+
+
+
         </ImageBackground>
       )}
     </View>
