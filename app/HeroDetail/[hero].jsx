@@ -348,7 +348,7 @@ const HeroDetail = () => {
           </Text>
 
           <ScrollView showsHorizontalScrollIndicator={false}
-          showsVerticalScrollIndicator={false}>
+            showsVerticalScrollIndicator={false}>
             <View style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 8 }}>
               <AbilitiesSection sectionTitle="NORMAL ATTACK" data={Normal_Attack} onPressAbility={openAbilityDetails} />
               <AbilitiesSection sectionTitle="ABILITIES" data={ABILITIES} onPressAbility={openAbilityDetails} />
@@ -388,11 +388,11 @@ const HeroDetail = () => {
             </TouchableOpacity>
 
             <ScrollView
-            showsHorizontalScrollIndicator={false}
-            showsVerticalScrollIndicator={false}
+              showsHorizontalScrollIndicator={false}
+              showsVerticalScrollIndicator={false}
               contentContainerStyle={{
                 flexGrow: 1,
-                
+
               }}
             >
               <View
@@ -403,8 +403,9 @@ const HeroDetail = () => {
                   alignItems: 'center',
                   borderWidth: 1,
                   borderColor: 'white',
-                  paddingBottom:10,
-                  marginBottom:40
+                  paddingBottom: 10,
+                  marginBottom: 40,
+                  zIndex: 2
                 }}
               >
                 <View
@@ -429,6 +430,7 @@ const HeroDetail = () => {
                       flexDirection: 'row',
                       gap: 12,
                       width: '100%',
+                      paddingLeft:4
                     }}
                   >
                     {renderAniShortcut(selectedAbility.key)}
@@ -473,24 +475,72 @@ const HeroDetail = () => {
                           style={{
                             fontFamily: 'Montserrat-SemiBold',
                             fontSize: 14,
-                            color: 'gray',
                             width: '30%',
+                            color: 'white',
                           }}
                         >
                           {key}:
                         </Text>
-                        <Text
-                          style={{
-                            fontFamily: 'Montserrat-Regular',
-                            fontSize: 14,
-                            color: 'gray',
-                            width: '65%',
-                            flexWrap: 'wrap',
-                          }}
-                          numberOfLines={0}
-                        >
-                          {value}
-                        </Text>
+
+                        {typeof value === 'object' && !Array.isArray(value) ? (
+                          <View
+                            style={{
+                              width: '65%', 
+                            }}
+                          >
+                            {Object.entries(value).map(([subKey, subValue], subIndex) => (
+                              <View
+                                key={subIndex}
+                                style={{
+                                  marginLeft: 16,
+                                  marginBottom: 4,
+                                  display: 'flex',
+                                  flexDirection: 'row', 
+                                  justifyContent: 'space-between',
+                                  gap: 4,
+                                  width: '100%',
+                                }}
+                              >
+                                <Text
+                                  style={{
+                                    fontFamily: 'Montserrat-SemiBold',
+                                    fontSize: 12,
+                                    color: 'lightgray', 
+                                    width: '40%',
+                                    flexWrap: 'wrap',
+                                  }}
+                                >
+                                  {subKey}:
+                                </Text>
+                                
+                                <Text
+                                  style={{
+                                    fontFamily: 'Montserrat-Regular',
+                                    fontSize: 12,
+                                    color: 'white',
+                                    width: '55%',
+                                    flexWrap: 'wrap',
+                                  }}
+                                >
+                                  {subValue}
+                                </Text>
+                              </View>
+                            ))}
+                          </View>
+                        ) : (
+                          <Text
+                            style={{
+                              fontFamily: 'Montserrat-Regular',
+                              fontSize: 14,
+                              color: 'white',
+                              width: '65%',
+                              flexWrap: 'wrap',
+                            }}
+                            numberOfLines={0}
+                          >
+                            {value}
+                          </Text>
+                        )}
                       </View>
                     ))
                   ) : (
@@ -504,6 +554,8 @@ const HeroDetail = () => {
                       No details available
                     </Text>
                   )}
+
+
                 </View>
               </View>
             </ScrollView>
