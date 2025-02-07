@@ -24,7 +24,15 @@ const renderShortcut = (shortcut) => {
 const renderAniShortcut = (shortcut) => {
   if (shortcut === 'PASSIVE') {
     return (
-      <Text style={{ fontFamily: 'Montserrat-SemiBold', fontSize: 13 }}>PASSIVE</Text>
+      <ImageBackground source={require('../../assets/images/AbilityKeyBg.png')} resizeMode='contain'
+      style={{
+        width: '60',
+        alignItems: 'center',
+        display: 'flex',
+        justifyContent: 'center',
+      }}>
+      <Text style={{ fontFamily: 'Montserrat-SemiBold', fontSize: 12, }}>PASSIVE</Text>
+    </ImageBackground>
     );
   } else if (typeof shortcut === 'string' && shortcut.includes('.')) {
     return <Image source={{ uri: shortcut }} style={{ width: 24, height: 24 }} />;
@@ -122,7 +130,6 @@ const HeroDetail = () => {
         if (!querySnapshot.empty) {
           const docData = querySnapshot.docs[0].data();
           setHeroDetails(docData);
-          console.log(heroDetails)
           setNoData(false);
         } else {
           setNoData(true);
@@ -137,6 +144,13 @@ const HeroDetail = () => {
 
     fetchHeroDetails();
   }, [hero]);
+
+  useEffect(() => {
+    if (heroDetails) {
+      console.log('Hero Details:', heroDetails);
+    }
+  }, [heroDetails]);
+  
 
   const openAbilityDetails = (ability) => {
     setSelectedAbility(ability);
@@ -302,17 +316,19 @@ const HeroDetail = () => {
               height: '100%',
               zIndex: 1,
               display: 'flex',
-              alignItems: 'flex-end'
             }}>
 
             <Image
               source={{ uri: heroDetails.character }}
-              resizeMode='cover'
+              resizeMode='contain'
               style={{
-                width: 230,
                 height: '95%',
                 marginRight: 30,
-                zIndex: 1,
+                zIndex: 3,
+                height:'100%',
+                width:'150%',
+                alignSelf:'center',
+                marginLeft:150
               }}
             />
           </ImageBackground>
