@@ -145,11 +145,11 @@ const HeroDetail = () => {
     fetchHeroDetails();
   }, [hero]);
 
-  useEffect(() => {
-    if (heroDetails) {
-      console.log('Hero Details:', heroDetails);
-    }
-  }, [heroDetails]);
+  // useEffect(() => {
+  //   if (heroDetails) {
+  //     console.log('Hero Details:', heroDetails);
+  //   }
+  // }, [heroDetails]);
   
 
   const openAbilityDetails = (ability) => {
