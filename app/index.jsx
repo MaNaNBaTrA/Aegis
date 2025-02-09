@@ -1,10 +1,9 @@
-import { SignedIn, SignedOut, useAuth } from '@clerk/clerk-expo'
-import { Link,Redirect } from 'expo-router'
-import { Text, View ,ActivityIndicator} from 'react-native'
+import { SignedIn, SignedOut, useAuth } from '@clerk/clerk-expo';
+import { Link, Redirect } from 'expo-router';
+import { Text, View, ActivityIndicator } from 'react-native';
 
 export default function Page() {
-
-  const { isLoaded } = useAuth();
+  const { isLoaded, isSignedIn } = useAuth();
 
   if (!isLoaded) {
     return (
@@ -14,10 +13,14 @@ export default function Page() {
     );
   }
 
+  if (isSignedIn) {
+    return <Redirect href="/home" />;
+  }
+
   return (
     <View>
       <SignedIn>
-      <Redirect href="/home" />
+        <Redirect href="/home" />
       </SignedIn>
       <SignedOut>
         <Link href="/(auth)/sign-in">
@@ -28,5 +31,5 @@ export default function Page() {
         </Link>
       </SignedOut>
     </View>
-  )
+  );
 }
