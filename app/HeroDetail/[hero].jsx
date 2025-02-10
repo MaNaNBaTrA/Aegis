@@ -4,20 +4,19 @@ import { useLocalSearchParams } from 'expo-router';
 import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
 import { Colors } from '../../constants/Colors';
 
-
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 const renderShortcut = (shortcut) => {
   if (shortcut === 'PASSIVE') {
     return (
-      <Text style={{ fontFamily: 'Montserrat-SemiBold', fontSize: 13 }}>PASSIVE</Text>
+      <Text style={{ fontFamily: 'Montserrat-SemiBold', fontSize: 11 }}>PASSIVE</Text>
     );
   } else if (typeof shortcut === 'string' && shortcut.includes('.')) {
     return <Image source={{ uri: shortcut }} style={{ width: 24, height: 24 }} />;
   } else if (typeof shortcut === 'number') {
     return <Image source={shortcut} />;
   } else {
-    return <Text style={{ fontFamily: 'Montserrat-SemiBold', fontSize: 16 }}>{shortcut}</Text>;
+    return <Text style={{ fontFamily: 'Montserrat-SemiBold', fontSize: 14 }}>{shortcut}</Text>;
   }
 };
 
@@ -25,14 +24,14 @@ const renderAniShortcut = (shortcut) => {
   if (shortcut === 'PASSIVE') {
     return (
       <ImageBackground source={require('../../assets/images/AbilityKeyBg.png')} resizeMode='contain'
-      style={{
-        width: '60',
-        alignItems: 'center',
-        display: 'flex',
-        justifyContent: 'center',
-      }}>
-      <Text style={{ fontFamily: 'Montserrat-SemiBold', fontSize: 12, }}>PASSIVE</Text>
-    </ImageBackground>
+        style={{
+          width: '60',
+          alignItems: 'center',
+          display: 'flex',
+          justifyContent: 'center',
+        }}>
+        <Text style={{ fontFamily: 'Montserrat-SemiBold', fontSize: 12, }}>PASSIVE</Text>
+      </ImageBackground>
     );
   } else if (typeof shortcut === 'string' && shortcut.includes('.')) {
     return <Image source={{ uri: shortcut }} style={{ width: 24, height: 24 }} />;
@@ -117,6 +116,7 @@ const HeroDetail = () => {
   const [loading, setLoading] = useState(true);
   const [noData, setNoData] = useState(false);
   const [selectedAbility, setSelectedAbility] = useState(null);
+  const [selectedAvatar, setSelectedAvatar] = useState(null);
   const slideUpAnim = useState(new Animated.Value(SCREEN_HEIGHT))[0];
 
   useEffect(() => {
@@ -130,6 +130,9 @@ const HeroDetail = () => {
         if (!querySnapshot.empty) {
           const docData = querySnapshot.docs[0].data();
           setHeroDetails(docData);
+          if (docData.Avatar && Object.keys(docData.Avatar).length > 0) {
+            setSelectedAvatar(Object.keys(docData.Avatar)[0]);
+          }
           setNoData(false);
         } else {
           setNoData(true);
@@ -150,7 +153,7 @@ const HeroDetail = () => {
   //     console.log('Hero Details:', heroDetails);
   //   }
   // }, [heroDetails]);
-  
+
 
   const openAbilityDetails = (ability) => {
     setSelectedAbility(ability);
@@ -171,6 +174,8 @@ const HeroDetail = () => {
     });
   };
 
+  const currentAvatarDetails = heroDetails?.Avatar?.[selectedAvatar] || null;
+
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -189,60 +194,60 @@ const HeroDetail = () => {
   }
 
 
-  const renderHeroName = (name) => {
-    const nameParts = name.split(' ');
-    if (nameParts.length === 1) {
-      return (
+ const renderHeroName = (name) => {
+  const displayName = currentAvatarDetails?.Cname || name;
+  const nameParts = displayName.split(' ');
+  if (nameParts.length === 1) {
+    return (
+      <Text
+        style={{
+          fontSize: 30,
+          fontFamily: 'Montserrat-ExtraBoldItalic',
+          lineHeight: 32,
+          zIndex: 5,
+          paddingLeft: 20,
+        }}
+      >
+        {nameParts[0]}
+      </Text>
+    );
+  } else if (nameParts.length === 2) {
+    return (
+      <View style={{ paddingLeft: 20 }}>
         <Text
           style={{
             fontSize: 30,
             fontFamily: 'Montserrat-ExtraBoldItalic',
             lineHeight: 32,
-            zIndex: 2,
-            paddingLeft: 20,
+            zIndex: 5,
           }}
         >
           {nameParts[0]}
         </Text>
-      );
-    } else if (nameParts.length === 2) {
-      return (
-        <>
-          <Text
-            style={{
-              fontSize: 30,
-              fontFamily: 'Montserrat-ExtraBoldItalic',
-              lineHeight: 32,
-              zIndex: 2,
-              paddingLeft: 20,
-            }}
-          >
-            {nameParts[0]}
-          </Text>
-          <Text
-            style={{
-              fontSize: 30,
-              fontFamily: 'Montserrat-ExtraBoldItalic',
-              textAlign: 'right',
-              lineHeight: 32,
-              zIndex: 2,
-              paddingLeft: 20,
-            }}
-          >
-            {nameParts[1]}
-          </Text>
-
-        </>
-      );
-    }
-  };
+        <Text
+          style={{
+            fontSize: 30,
+            fontFamily: 'Montserrat-ExtraBoldItalic',
+            lineHeight: 32,
+            zIndex: 5,
+            marginRight: 20,
+            width:"150%"
+          }}
+        >
+          {nameParts[1]}
+        </Text>
+      </View>
+    );
+  }
+};
 
   const renderType = (type) => {
     if (heroDetails.type == 'STRATEGIST') {
       return (
         <>
           <Image
-            source={require('../../assets/images/Strategist.png')} />
+            source={require('../../assets/images/Strategist.png')}
+          />
         </>
       )
     }
@@ -263,7 +268,8 @@ const HeroDetail = () => {
   }
 
 
-  const { 'NORMAL ATTACK': Normal_Attack, ABILITIES, 'TEAM-UP ABILITIES': TEAM_UP_ABILITIES } = heroDetails;
+  const { 'NORMAL ATTACK': Normal_Attack, ABILITIES, 'TEAM-UP ABILITIES': TEAM_UP_ABILITIES } = currentAvatarDetails || heroDetails;
+
 
   return (
     <View style={{
@@ -287,7 +293,7 @@ const HeroDetail = () => {
             marginTop: '20%',
             display: 'flex',
             gap: 4,
-            width: '50%',
+            width: '60%',
             position: 'absolute'
           }}>
             <View style={{
@@ -303,11 +309,61 @@ const HeroDetail = () => {
                 style={{
                   fontSize: 24,
                   fontFamily: 'Montserrat-ExtraBoldItalic',
-                  textAlign: 'center'
+                  textAlign: 'center',
+                  zIndex: 7
                 }}
               >{heroDetails.type}</Text>
             </View>
             {renderHeroName(heroDetails.name)}
+
+
+            <View style={{
+              flexDirection: 'row',
+              justifyContent: 'flex-start',
+              gap: 10,
+              paddingLeft: 20,
+              marginTop: 10,
+              zIndex: 5
+            }}>
+              {heroDetails.Avatar && Object.values(heroDetails.Avatar).map((avatar, index) => (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => setSelectedAvatar(Object.keys(heroDetails.Avatar)[index])}
+                  style={{
+                    alignItems: 'center',
+                    marginBottom: 10
+                  }}
+                >
+                  <Image
+                    source={{ uri: avatar.Cimage }}
+                    style={{
+                      width: 60,
+                      height: 60,
+                      borderRadius: 8
+                    }}
+                    resizeMode='contain'
+                  />
+                  {selectedAvatar === Object.keys(heroDetails.Avatar)[index] && (
+                    <View style={{
+                      width: 0,
+                      height: 0,
+                      backgroundColor: 'transparent',
+                      borderStyle: 'solid',
+                      borderTopWidth: 0,
+                      borderRightWidth: 10,
+                      borderBottomWidth: 10,
+                      borderLeftWidth: 10,
+                      borderTopColor: 'transparent',
+                      borderRightColor: 'transparent',
+                      borderBottomColor: '#000',
+                      borderLeftColor: 'transparent',
+                      position: 'absolute',
+                      bottom: -10
+                    }} />
+                  )}
+                </TouchableOpacity>
+              ))}
+            </View>
           </View>
           <ImageBackground
             source={{ uri: heroDetails.character_bg }}
@@ -317,7 +373,6 @@ const HeroDetail = () => {
               zIndex: 1,
               display: 'flex',
             }}>
-
             <Image
               source={{ uri: heroDetails.character }}
               resizeMode='contain'
@@ -325,10 +380,10 @@ const HeroDetail = () => {
                 height: '95%',
                 marginRight: 30,
                 zIndex: 3,
-                height:'100%',
-                width:'150%',
-                alignSelf:'center',
-                marginLeft:150
+                height: '100%',
+                width: '150%',
+                alignSelf: 'center',
+                marginLeft: 150
               }}
             />
           </ImageBackground>
@@ -446,7 +501,7 @@ const HeroDetail = () => {
                       flexDirection: 'row',
                       gap: 12,
                       width: '100%',
-                      paddingLeft:4
+                      paddingLeft: 4
                     }}
                   >
                     {renderAniShortcut(selectedAbility.key)}
@@ -501,7 +556,7 @@ const HeroDetail = () => {
                         {typeof value === 'object' && !Array.isArray(value) ? (
                           <View
                             style={{
-                              width: '65%', 
+                              width: '65%',
                             }}
                           >
                             {Object.entries(value).map(([subKey, subValue], subIndex) => (
@@ -511,7 +566,7 @@ const HeroDetail = () => {
                                   marginLeft: 16,
                                   marginBottom: 4,
                                   display: 'flex',
-                                  flexDirection: 'row', 
+                                  flexDirection: 'row',
                                   justifyContent: 'space-between',
                                   gap: 4,
                                   width: '100%',
@@ -521,14 +576,14 @@ const HeroDetail = () => {
                                   style={{
                                     fontFamily: 'Montserrat-SemiBold',
                                     fontSize: 12,
-                                    color: 'lightgray', 
+                                    color: 'lightgray',
                                     width: '40%',
                                     flexWrap: 'wrap',
                                   }}
                                 >
                                   {subKey}:
                                 </Text>
-                                
+
                                 <Text
                                   style={{
                                     fontFamily: 'Montserrat-Regular',

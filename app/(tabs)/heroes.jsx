@@ -91,7 +91,7 @@ const Heroes = () => {
         <Text
           style={{
             color: '#fff',
-            fontSize: 30,
+            fontSize: 25,
             fontFamily: 'Montserrat-ExtraBoldItalic',
             textAlign: 'center',
             lineHeight: 32,
@@ -107,10 +107,10 @@ const Heroes = () => {
           <Text
             style={{
               color: '#fff',
-              fontSize: 30,
+              fontSize: 25,
               fontFamily: 'Montserrat-ExtraBoldItalic',
               textAlign: 'center',
-              lineHeight: 32,
+              lineHeight: 28,
             }}
           >
             {nameParts[0]}
@@ -118,10 +118,10 @@ const Heroes = () => {
           <Text
             style={{
               color: '#fff',
-              fontSize: 30,
+              fontSize: 25,
               fontFamily: 'Montserrat-ExtraBoldItalic',
               textAlign: 'center',
-              lineHeight: 32,
+              lineHeight: 28,
             }}
           >
             {nameParts[1]}
