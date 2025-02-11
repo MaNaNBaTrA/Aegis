@@ -4,6 +4,7 @@ import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../configs/FirebaseConfig';
 import { useRouter } from 'expo-router';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import {useUser} from '@clerk/clerk-expo'
 
 const Heroes = () => {
   const router = useRouter();
@@ -13,6 +14,7 @@ const Heroes = () => {
   const [selectedType, setSelectedType] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const {user} = useUser();
 
   const currentDate = new Date().toLocaleDateString('en-GB', {
     day: 'numeric',
@@ -191,7 +193,7 @@ const Heroes = () => {
             color: '#000',
             marginTop: 3
           }}>
-            Hey, Manan!
+            Hey, {user.firstName}!
           </Text>
 
           <Image source={require('../../assets/images/Marvel_Rival_Logo.png')} style={{ alignSelf: 'center' }} />
