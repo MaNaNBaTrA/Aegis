@@ -1,6 +1,5 @@
 import { View, Text, TouchableOpacity, ImageBackground, ScrollView } from 'react-native';
 import React, { useState, useEffect } from 'react';
-import LottieView from 'lottie-react-native';
 import Slider from '../../components/Slider';
 import Updates from '../../components/Updates';
 import Heroes from '../../components/Heroes';
@@ -10,30 +9,7 @@ import { collection, getDocs } from 'firebase/firestore';
 import { db } from "../../configs/FirebaseConfig";
 import { useRouter } from 'expo-router';
 import { useUser } from '@clerk/clerk-expo';
-
-const LoadingScreen = () => (
-  <View style={{ 
-    flex: 1, 
-    justifyContent: 'center', 
-    alignItems: 'center', 
-    backgroundColor: '#fff',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 9999
-  }}>
-    <LottieView
-      source={require('../../assets/Loader/Loader.json')} 
-      autoPlay
-      loop
-      style={{ width: 200, height: 200 }}
-      renderMode="AUTOMATIC"
-      resizeMode="contain"
-    />
-  </View>
-);
+import LoadingScreen from '../../components/Loader'
 
 const Home = () => {
   const router = useRouter();

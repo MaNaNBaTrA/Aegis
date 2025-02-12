@@ -1,8 +1,9 @@
-import { View, Text, Image, ImageBackground, ScrollView, TouchableOpacity, ActivityIndicator, Animated, Dimensions } from 'react-native';
+import { View, Text, Image, ImageBackground, ScrollView, TouchableOpacity, Animated, Dimensions } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useLocalSearchParams } from 'expo-router';
 import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
 import { Colors } from '../../constants/Colors';
+import LoadingScreen from '../../components/Loader';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
@@ -148,11 +149,14 @@ const HeroDetail = () => {
     fetchHeroDetails();
   }, [hero]);
 
+
   // useEffect(() => {
   //   if (heroDetails) {
   //     console.log('Hero Details:', heroDetails);
   //   }
   // }, [heroDetails]);
+
+  
 
 
   const openAbilityDetails = (ability) => {
@@ -176,13 +180,9 @@ const HeroDetail = () => {
 
   const currentAvatarDetails = heroDetails?.Avatar?.[selectedAvatar] || null;
 
+
   if (loading) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color={Colors.ABILITIESBG} />
-        <Text>Loading...</Text>
-      </View>
-    );
+    return <LoadingScreen />;
   }
 
   if (noData) {
@@ -192,6 +192,7 @@ const HeroDetail = () => {
       </View>
     );
   }
+
 
 
  const renderHeroName = (name) => {
@@ -389,7 +390,7 @@ const HeroDetail = () => {
           </ImageBackground>
         </ImageBackground>
         <Image
-          source={require('../Demoassets/Bg_Component1.png')}
+          source={require('../../assets/images/Bg_Component1.png')}
           style={{
             width: '100%',
             height: 60,
@@ -400,7 +401,7 @@ const HeroDetail = () => {
         />
       </View>
       <ImageBackground
-        source={require('../Demoassets/Abilities_Bg.jpg')}
+        source={require('../../assets/images/Abilities_Bg.jpg')}
         style={{ width: '100%', zIndex: 0, height: '100%', flex: 1 }}
         resizeMode="stretch"
       >
@@ -431,7 +432,7 @@ const HeroDetail = () => {
 
       {selectedAbility && (
         <ImageBackground
-          source={require('../Demoassets/Abilities_Bg.jpg')}
+          source={require('../../assets/images/Abilities_Bg.jpg')}
           style={{
             width: '100%',
             height: SCREEN_HEIGHT / 2
