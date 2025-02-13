@@ -8,5 +8,30 @@ export default function AuthRoutesLayout() {
     return <Redirect href={'/home'} />
   }
 
-  return <Stack />
+  return (
+    <Stack
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: '#fff',
+        },
+        headerTintColor: '#000',
+        headerBackTitle: 'Back',
+        headerTitleAlign: 'center',
+        headerShadowVisible: false
+      }}
+    >
+      <Stack.Screen
+        name="sign-in"
+        options={{
+          title: 'Sign In'
+        }}
+      />
+      <Stack.Screen
+        name="sign-up"
+        options={{
+          title: 'Create Account'
+        }}
+      />
+    </Stack>
+  )
 }

@@ -271,6 +271,8 @@ const HeroDetail = () => {
 
   const { 'NORMAL ATTACK': Normal_Attack, ABILITIES, 'TEAM-UP ABILITIES': TEAM_UP_ABILITIES } = currentAvatarDetails || heroDetails;
 
+  const marginLeftValue = heroDetails.name === 'CLOAK &DAGGER' ? 0 : 150;
+
 
   return (
     <View style={{
@@ -304,6 +306,7 @@ const HeroDetail = () => {
               gap: 12,
               marginBottom: 24,
               paddingLeft: 20,
+              zIndex:20
             }}>
               {renderType(heroDetails.type)}
               <Text
@@ -311,7 +314,7 @@ const HeroDetail = () => {
                   fontSize: 24,
                   fontFamily: 'Montserrat-ExtraBoldItalic',
                   textAlign: 'center',
-                  zIndex: 7
+                  zIndex: 20
                 }}
               >{heroDetails.type}</Text>
             </View>
@@ -338,8 +341,8 @@ const HeroDetail = () => {
                   <Image
                     source={{ uri: avatar.Cimage }}
                     style={{
-                      width: 60,
-                      height: 60,
+                      width: 40,
+                      height: 40,
                       borderRadius: 8
                     }}
                     resizeMode='contain'
@@ -384,7 +387,7 @@ const HeroDetail = () => {
                 height: '100%',
                 width: '150%',
                 alignSelf: 'center',
-                marginLeft: 150
+                marginLeft: marginLeftValue
               }}
             />
           </ImageBackground>

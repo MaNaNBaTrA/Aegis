@@ -1,8 +1,8 @@
 import { useFonts } from "expo-font";
 import { ClerkProvider, ClerkLoaded } from '@clerk/clerk-expo';
-import { ActivityIndicator, View } from "react-native";
 import { tokenCache } from '@/cache';
-import { Slot } from 'expo-router'
+import { Slot } from 'expo-router';
+import Loader from '../components/Loader'; 
 
 export default function RootLayout() {
 
@@ -29,9 +29,7 @@ export default function RootLayout() {
 
   if (!fontsLoaded) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
+      <Loader/>
     );
   }
 

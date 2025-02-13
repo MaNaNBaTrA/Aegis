@@ -27,5 +27,6 @@ export const Colors = {
   BLACK:'#000000',
   ABILITIES:'#7b8fb0',
   ABILITIESBG:'#e1e6ec',
-  ABILITIESTYPE:'#98a4c1'
+  ABILITIESTYPE:'#98a4c1',
+  MainRed:'#ec1b23'
 };
