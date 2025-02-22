@@ -11,14 +11,9 @@ export default function AuthRoutesLayout() {
   return (
     <Stack
       screenOptions={{
-        headerStyle: {
-          backgroundColor: '#fff',
-        },
-        headerTintColor: '#000',
-        headerBackTitle: 'Back',
-        headerTitleAlign: 'center',
-        headerShadowVisible: false
+        headerShown:false
       }}
+     
     >
       <Stack.Screen
         name="sign-in"
