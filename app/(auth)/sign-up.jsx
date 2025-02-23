@@ -1,8 +1,38 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, Image, ActivityIndicator, Alert, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useSignUp } from '@clerk/clerk-expo';
 import { useRouter } from 'expo-router';
+import Svg, { Circle, Path } from 'react-native-svg';
+
+const DefaultAvatar = () => (
+  <Svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+    <Circle cx="60" cy="60" r="60" fill="#E7E9EB"/>
+    <Circle cx="60" cy="50" r="25" fill="#9fa1a1"/>
+    <Path
+      d="M60 82C82 82 98 92 104 110C94.5 116.5 77.8039 120 60 120C42.1961 120 25.5 116.5 16 110C22 92 38 82 60 82Z"
+      fill="#9fa1a1"
+    />
+    <Circle
+      cx="60"
+      cy="50"
+      r="26"
+      fill="#8a9293"
+      opacity="0.1"
+    />
+  </Svg>
+);
+
+const ErrorMessage = ({ message }) => message ? (
+  <Text style={{
+    color: '#dc2626',
+    fontSize: 12,
+    fontFamily: 'Montserrat-Medium',
+    marginTop: 4
+  }}>
+    {message}
+  </Text>
+) : null;
 
 export default function SignUpScreen() {
   const { isLoaded, signUp, setActive } = useSignUp();
@@ -18,40 +48,71 @@ export default function SignUpScreen() {
     otpCode: ''
   });
 
+  const [errors, setErrors] = useState({
+    firstName: '',
+    lastName: '',
+    emailAddress: '',
+    password: '',
+    profilePic: '',
+    general: ''
+  });
+
   const [state, setState] = useState({
     loading: false,
     awaitingVerification: false,
-    verifyingOtp: false,
-    errorMessage: ''
+    verifyingOtp: false
   });
 
   const validateForm = () => {
-    const { emailAddress, password, firstName, lastName } = formData;
-    
-    if (!emailAddress || !password || !firstName || !lastName) {
-      Alert.alert('Missing Fields', 'Please fill out all required fields.');
-      return false;
+    const newErrors = {};
+    let isValid = true;
+
+    if (!formData.firstName) {
+      newErrors.firstName = 'First name is required';
+      isValid = false;
     }
 
-    if (password.length < 8) {
-      Alert.alert('Invalid Password', 'Password must be at least 8 characters long.');
-      return false;
+    if (!formData.lastName) {
+      newErrors.lastName = 'Last name is required';
+      isValid = false;
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(emailAddress)) {
-      Alert.alert('Invalid Email', 'Please enter a valid email address.');
-      return false;
+    if (!formData.emailAddress) {
+      newErrors.emailAddress = 'Email is required';
+      isValid = false;
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.emailAddress)) {
+        newErrors.emailAddress = 'Please enter a valid email address';
+        isValid = false;
+      }
     }
 
-    return true;
+    if (!formData.password) {
+      newErrors.password = 'Password is required';
+      isValid = false;
+    } else if (formData.password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters long';
+      isValid = false;
+    }
+
+    if (!formData.profilePic) {
+      newErrors.profilePic = 'Profile picture is required';
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
   };
 
   const pickImage = async () => {
     try {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert('Permission Denied', 'Permission to access the media library is required.');
+        setErrors(prev => ({
+          ...prev,
+          profilePic: 'Permission to access the media library is required'
+        }));
         return;
       }
 
@@ -67,15 +128,22 @@ export default function SignUpScreen() {
           ...prev,
           profilePic: result.assets[0].uri
         }));
+        setErrors(prev => ({ ...prev, profilePic: '' }));
       }
     } catch (error) {
-      Alert.alert('Error', 'Failed to pick image. Please try again.');
+      setErrors(prev => ({
+        ...prev,
+        profilePic: 'Failed to pick image. Please try again'
+      }));
     }
   };
 
   const uploadImageToCloudinary = async () => {
     if (!formData.profilePic) {
-      Alert.alert('No Image', 'Please select a profile image before uploading.');
+      setErrors(prev => ({
+        ...prev,
+        profilePic: 'Please select a profile image before uploading'
+      }));
       return null;
     }
 
@@ -108,7 +176,10 @@ export default function SignUpScreen() {
       
       return imageUrl;
     } catch (error) {
-      Alert.alert('Upload Error', 'Failed to upload image. Please try again.');
+      setErrors(prev => ({
+        ...prev,
+        profilePic: 'Failed to upload image. Please try again'
+      }));
       return null;
     } finally {
       setState(prev => ({ ...prev, loading: false }));
@@ -118,10 +189,8 @@ export default function SignUpScreen() {
   const onSignUpPress = async () => {
     if (!isLoaded) return;
 
-    if (!formData.profilePic) {
-      Alert.alert('Upload Required', 'Please select your profile picture.');
-      return;
-    }
+    setErrors({});
+    if (!validateForm()) return;
 
     setState(prev => ({ ...prev, loading: true }));
 
@@ -153,19 +222,18 @@ export default function SignUpScreen() {
       }));
     } catch (err) {
       console.error('Signup error:', err);
-      const errorMessages = err.errors?.map(error => error.longMessage).join('\n') || 'Sign Up Failed';
-      setState(prev => ({ 
+      const errorMessage = err.errors?.map(error => error.longMessage).join('\n') || 'Sign Up Failed';
+      setErrors(prev => ({ 
         ...prev, 
-        errorMessage: errorMessages,
-        loading: false 
+        general: errorMessage
       }));
-      Alert.alert('Sign Up Error', errorMessages);
+      setState(prev => ({ ...prev, loading: false }));
     }
   };
 
   const onVerifyOtpPress = async () => {
     if (!formData.otpCode) {
-      Alert.alert('Enter OTP', 'Please enter the verification code sent to your email.');
+      setErrors(prev => ({ ...prev, general: 'Please enter the verification code' }));
       return;
     }
 
@@ -188,7 +256,10 @@ export default function SignUpScreen() {
       router.replace('/home');
     } catch (error) {
       console.error('Verification error:', error);
-      Alert.alert('Verification Failed', 'Invalid code or verification failed. Please try again.');
+      setErrors(prev => ({
+        ...prev,
+        general: 'Invalid code or verification failed. Please try again'
+      }));
     } finally {
       setState(prev => ({ ...prev, verifyingOtp: false }));
     }
@@ -196,112 +267,339 @@ export default function SignUpScreen() {
 
   const renderSignUpForm = () => (
     <>
-      <Text style={styles.title}>Sign Up</Text>
+      <View style={{
+        display: 'flex',
+        gap: 10,
+        alignItems: 'center'
+      }}>
+        <Text style={{
+          fontFamily: 'Montserrat-Medium',
+          fontSize: 26,
+          textAlign: 'center',
+        }}>
+          Sign Up
+        </Text>
+        <Text style={{
+          fontFamily: 'Montserrat-Medium',
+          fontSize: 12,
+          color: '#9fa1a1',
+          marginBottom: 10
+        }}>
+          Create an account to get started
+        </Text>
+        <View style={{
+          alignItems: 'center',
+          marginBottom: 10,
+          gap: 10
+        }}>
+          <TouchableOpacity
+            onPress={pickImage}
+            style={{
+              width: 120,
+              height: 120,
+              borderRadius: 60,
+              overflow: 'hidden',
+              justifyContent: 'center',
+              alignItems: 'center',
+              backgroundColor: '#e7e9eb'
+            }}
+          >
+            {formData.profilePic ? (
+              <Image
+                source={{ uri: formData.profilePic }}
+                style={{
+                  width: '100%',
+                  height: '100%'
+                }}
+              />
+            ) : (
+              <DefaultAvatar />
+            )}
+          </TouchableOpacity>
 
-      <TextInput
-        value={formData.firstName}
-        placeholder="First Name"
-        onChangeText={(text) => setFormData(prev => ({ ...prev, firstName: text }))}
-        style={styles.input}
-      />
-      <TextInput
-        value={formData.lastName}
-        placeholder="Last Name"
-        onChangeText={(text) => setFormData(prev => ({ ...prev, lastName: text }))}
-        style={styles.input}
-      />
-
-      <View style={styles.imageSection}>
-        <Button title="Pick Profile Image" onPress={pickImage} />
-        {formData.profilePic && (
-          <Image
-            source={{ uri: formData.profilePic }}
-            style={styles.profileImage}
-          />
-        )}
-        <Button title="Upload Image" onPress={uploadImageToCloudinary} />
-        {state.loading && <ActivityIndicator size="large" color="#0000ff" />}
+          <Text style={{
+            fontFamily: 'Montserrat-Medium',
+            fontSize: 12,
+            color: '#6d53f4',
+          }}>
+            Tap to choose profile picture
+          </Text>
+          <ErrorMessage message={errors.profilePic} />
+        </View>
       </View>
 
-      <TextInput
-        value={formData.emailAddress}
-        placeholder="Email"
-        autoCapitalize="none"
-        keyboardType="email-address"
-        onChangeText={(text) => setFormData(prev => ({ ...prev, emailAddress: text }))}
-        style={styles.input}
-      />
-      <TextInput
-        value={formData.password}
-        placeholder="Password (min 8 characters)"
-        secureTextEntry
-        onChangeText={(text) => setFormData(prev => ({ ...prev, password: text }))}
-        style={styles.input}
-      />
+      <View style={{ width: '90%', gap: 12 }}>
+        <View>
+          <Text style={{
+            fontFamily: 'Montserrat-Medium',
+            fontSize: 12,
+            marginBottom: 2
+          }}>
+            First Name
+          </Text>
+          <TextInput
+            value={formData.firstName}
+            onChangeText={(text) => {
+              setFormData(prev => ({ ...prev, firstName: text }));
+              setErrors(prev => ({ ...prev, firstName: '' }));
+            }}
+            placeholder="John"
+            style={{
+              width: '100%',
+              backgroundColor: '#e7e9eb',
+              paddingLeft: 10,
+              fontFamily: 'Montserrat-Light',
+              fontSize: 12,
+              borderRadius: 10,
+              padding: 10,
+              borderWidth: errors.firstName ? 1 : 0,
+              borderColor: '#dc2626'
+            }}
+          />
+          <ErrorMessage message={errors.firstName} />
+        </View>
 
-      {state.errorMessage ? (
-        <Text style={styles.errorText}>{state.errorMessage}</Text>
-      ) : null}
+        <View>
+          <Text style={{
+            fontFamily: 'Montserrat-Medium',
+            fontSize: 12,
+            marginBottom: 2
+          }}>
+            Last Name
+          </Text>
+          <TextInput
+            value={formData.lastName}
+            onChangeText={(text) => {
+              setFormData(prev => ({ ...prev, lastName: text }));
+              setErrors(prev => ({ ...prev, lastName: '' }));
+            }}
+            placeholder="Doe"
+            style={{
+              width: '100%',
+              backgroundColor: '#e7e9eb',
+              paddingLeft: 10,
+              fontFamily: 'Montserrat-Light',
+              fontSize: 12,
+              borderRadius: 10,
+              padding: 10,
+              borderWidth: errors.lastName ? 1 : 0,
+              borderColor: '#dc2626'
+            }}
+          />
+          <ErrorMessage message={errors.lastName} />
+        </View>
 
-      <Button title="Sign Up" onPress={onSignUpPress} />
+        <View>
+          <Text style={{
+            fontFamily: 'Montserrat-Medium',
+            fontSize: 12,
+            marginBottom: 2
+          }}>
+            Email
+          </Text>
+          <TextInput
+            value={formData.emailAddress}
+            onChangeText={(text) => {
+              setFormData(prev => ({ ...prev, emailAddress: text }));
+              setErrors(prev => ({ ...prev, emailAddress: '' }));
+            }}
+            placeholder="example@gmail.com"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            style={{
+              width: '100%',
+              backgroundColor: '#e7e9eb',
+              paddingLeft: 10,
+              fontFamily: 'Montserrat-Light',
+              fontSize: 12,
+              borderRadius: 10,
+              padding: 10,
+              borderWidth: errors.emailAddress ? 1 : 0,
+              borderColor: '#dc2626'
+            }}
+          />
+          <ErrorMessage message={errors.emailAddress} />
+        </View>
+
+        <View>
+          <Text style={{
+            fontFamily: 'Montserrat-Medium',
+            fontSize: 12,
+            marginBottom: 2
+          }}>
+            Password
+          </Text>
+          <TextInput
+            value={formData.password}
+            onChangeText={(text) => {
+              setFormData(prev => ({ ...prev, password: text }));
+              setErrors(prev => ({ ...prev, password: '' }));
+            }}
+            placeholder="Min 8 characters"
+            secureTextEntry
+            style={{
+              width: '100%',
+              backgroundColor: '#e7e9eb',
+              paddingLeft: 10,
+              fontFamily: 'Montserrat-Light',
+              fontSize: 12,
+              borderRadius: 10,
+              padding: 10,
+              borderWidth: errors.password ? 1 : 0,
+              borderColor: '#dc2626'
+            }}
+          />
+          <ErrorMessage message={errors.password} />
+        </View>
+
+        {errors.general ? (
+          <Text style={{
+            color: '#dc2626',
+            fontFamily: 'Montserrat-Medium',
+            fontSize: 12,
+            textAlign: 'center',
+            marginTop: 10
+          }}>
+            {errors.general}
+          </Text>
+        ) : null}
+
+        <TouchableOpacity
+          disabled={state.loading}
+          onPress={onSignUpPress}
+          style={{
+            backgroundColor: '#6d53f4',
+            borderRadius: 20,
+            width: '100%',
+            opacity: state.loading ? 0.7 : 1,
+            marginTop: 10
+          }}
+        >
+          <Text style={{
+            fontFamily: 'Montserrat-Medium',
+            fontSize: 14,
+            color: 'white',
+            padding: 10,
+            textAlign: 'center',
+          }}>
+            {state.loading ? 'Creating Account...' : 'Sign Up'}
+          </Text>
+        </TouchableOpacity>
+
+        <View style={{
+          display: 'flex',
+          flexDirection: 'row',
+          gap: 4,
+          justifyContent: 'center',
+          marginTop: 10
+        }}>
+          <Text style={{ fontFamily: 'Montserrat-Medium' }}>
+            Already have an account?
+          </Text>
+          <TouchableOpacity onPress={() => router.push('/(auth)/sign-in')}>
+            <Text style={{
+              fontFamily: 'Montserrat-Medium',
+              color: '#6d53f4',
+              textDecorationLine: 'underline'
+            }}>
+              Sign in
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </>
   );
 
   const renderOtpVerification = () => (
     <>
-      <Text style={styles.title}>Verify Your Email</Text>
-      <TextInput
-        value={formData.otpCode}
-        placeholder="Enter verification code"
-        onChangeText={(text) => setFormData(prev => ({ ...prev, otpCode: text }))}
-        style={styles.input}
-        keyboardType="number-pad"
-      />
-      <Button title="Verify Code" onPress={onVerifyOtpPress} />
-      {state.verifyingOtp && <ActivityIndicator size="large" color="#0000ff" />}
+      <View style={{
+        display: 'flex',
+        gap: 12,
+        alignItems: 'center',
+      }}>
+        <Text style={{
+          fontFamily: 'Montserrat-Medium',
+          fontSize: 26,
+          textAlign: 'center',
+          marginTop: 170
+        }}>
+          Verify Your Email
+        </Text>
+        <Text style={{
+          fontFamily: 'Montserrat-Medium',
+          fontSize: 12,
+          color: '#9fa1a1'
+        }}>
+          Enter the verification code sent to your email
+        </Text>
+      </View>
+
+      <View style={{ width: '90%', gap: 12 }}>
+        <TextInput
+          value={formData.otpCode}
+          onChangeText={(text) => setFormData(prev => ({ ...prev, otpCode: text }))}
+          placeholder="Enter verification code"
+          keyboardType="number-pad"
+          style={{
+            width: '100%',
+            backgroundColor: '#e7e9eb',
+            paddingLeft: 10,
+            fontFamily: 'Montserrat-Light',
+            fontSize: 12,
+            borderRadius: 10,
+            padding: 10,
+            marginBottom:10
+          }}
+        />
+
+        <TouchableOpacity
+          disabled={state.verifyingOtp}
+          onPress={onVerifyOtpPress}
+          style={{
+            backgroundColor: '#6d53f4',
+            borderRadius: 20,
+            width: '100%',
+            opacity: state.verifyingOtp ? 0.7 : 1
+          }}
+        >
+          <Text style={{
+            fontFamily: 'Montserrat-Medium',
+            fontSize: 14,
+            color: 'white',
+            padding: 10,
+            textAlign: 'center'
+          }}>
+            {state.verifyingOtp ? 'Verifying...' : 'Verify Code'}
+          </Text>
+        </TouchableOpacity>
+      </View>
     </>
   );
 
   return (
-    <View style={styles.container}>
+    <View style={{
+      width: '100%',
+      height: '100%',
+      display: 'flex',
+      alignItems: 'center',
+      flex: 1,
+      backgroundColor: 'white',
+      paddingTop: 50,
+      gap: 20
+    }}>
+      {state.loading && (
+        <ActivityIndicator 
+          size="large" 
+          color="#6d53f4" 
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            zIndex: 999
+          }}
+        />
+      )}
       {state.awaitingVerification ? renderOtpVerification() : renderSignUpForm()}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  input: {
-    marginBottom: 12,
-    borderColor: 'gray',
-    borderWidth: 1,
-    padding: 10,
-    width: '100%',
-    borderRadius: 5,
-  },
-  imageSection: {
-    alignItems: 'center',
-    marginVertical: 15,
-    width: '100%',
-  },
-  profileImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    marginVertical: 10,
-  },
-  errorText: {
-    color: 'red',
-    marginBottom: 10,
-  },
-});

@@ -274,8 +274,250 @@ export default function SignInPage() {
     setPassword('');
   };
 
-  const styles = {
-    container: {
+ 
+  const renderSignInForm = () => (
+    <>
+      <View style={{ display: 'flex', gap: 12,}}>
+        <Text style={{ 
+          fontFamily: 'Montserrat-Medium',
+          fontSize: 26,
+          textAlign: 'center',
+          marginTop: 50
+        }}>
+          Sign In
+        </Text>
+        <Text style={{ 
+          fontFamily: 'Montserrat-Medium',
+          fontSize: 12,
+          color: '#9fa1a1'
+        }}>
+          Hi! Welcome back, you've been missed
+        </Text>
+      </View>
+
+      <View style={{ width: '90%' }}>
+        <Text style={{ 
+          fontFamily: 'Montserrat-Medium',
+          fontSize: 12,
+          marginBottom: 2
+        }}>
+          Email
+        </Text>
+        <TextInput
+          value={emailAddress}
+          onChangeText={setEmailAddress}
+          placeholder="example@gmail.com"
+          keyboardType="email-address"
+          style={{
+            width: '100%',
+            backgroundColor: '#e7e9eb',
+            paddingLeft: 10,
+            fontFamily: 'Montserrat-Light',
+            fontSize: 12,
+            borderRadius: 10,
+            marginBottom: 12,
+            padding: 10
+          }}
+        />
+
+        <Text style={{ 
+          fontFamily: 'Montserrat-Medium',
+          fontSize: 12,
+          marginBottom: 2
+        }}>
+          Password
+        </Text>
+        <TextInput
+          value={password}
+          onChangeText={setPassword}
+          placeholder="********"
+          secureTextEntry
+          style={{
+            width: '100%',
+            backgroundColor: '#e7e9eb',
+            paddingLeft: 10,
+            fontFamily: 'Montserrat-Light',
+            fontSize: 12,
+            borderRadius: 10,
+            padding: 10
+          }}
+        />
+      </View>
+
+      <TouchableOpacity onPress={() => setIsResetFlow(true)}>
+        <Text style={{ 
+          fontFamily: 'Montserrat-Medium',
+          color: 'blue',
+          textDecorationLine: 'underline',
+        }}>
+          Forgot password?
+        </Text>
+      </TouchableOpacity>
+
+      {errorMessage && (
+        <Text style={{ color: 'red', marginTop: 10 }}>{errorMessage}</Text>
+      )}
+
+      <TouchableOpacity
+        disabled={loading || !emailAddress || !password}
+        onPress={onSignInPress}
+        style={{
+          backgroundColor: '#6d53f4',
+          borderRadius: 20,
+          width: '90%'
+        }}
+      >
+        <Text style={{
+          fontFamily: 'Montserrat-Medium',
+          fontSize: 14,
+          color: 'white',
+          padding: 10,
+          textAlign: 'center'
+        }}>
+          Sign In
+        </Text>
+      </TouchableOpacity>
+
+      <View style={{ display: 'flex', flexDirection: 'row', gap: 4 }}>
+        <Text style={{ fontFamily: 'Montserrat-Medium' }}>
+          Don't have an account?
+        </Text>
+        <TouchableOpacity onPress={() => router.push('/(auth)/sign-up')}>
+          <Text style={{
+            fontFamily: 'Montserrat-Medium',
+            color: 'blue',
+            textDecorationLine: 'underline'
+          }}>
+            Sign-up
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </>
+  );
+
+  const renderResetPassword = () => (
+    <>
+      <View style={{
+        width: '100%',
+        alignItems: "center",
+        display: 'flex',
+        gap: 10,
+      }}>
+        <Text style={{
+          fontFamily: 'Montserrat-Medium',
+          fontSize: 26,
+          textAlign: 'center',
+          marginTop: 100
+        }}>
+          Reset Password
+        </Text>
+        <TextInput
+          value={emailAddress}
+          onChangeText={setEmailAddress}
+          placeholder="Email"
+          keyboardType="email-address"
+          style={{
+            width: '90%',
+            backgroundColor: '#e7e9eb',
+            paddingLeft: 10,
+            fontFamily: 'Montserrat-Light',
+            fontSize: 12,
+            borderRadius: 10,
+            marginBottom: 12,
+            padding: 10
+          }}
+        />
+        <TouchableOpacity
+          disabled={loading || !emailAddress}
+          onPress={handleResetPassword}
+          style={{
+            backgroundColor: '#6d53f4',
+            borderRadius: 20,
+            width: '90%'
+          }}
+        >
+          <Text style={{
+            fontFamily: 'Montserrat-Medium',
+            fontSize: 14,
+            color: 'white',
+            padding: 10,
+            textAlign: 'center'
+          }}>
+            Send Reset Code
+          </Text>
+        </TouchableOpacity>
+        {errorMessage && <Text style={{ color: 'red', marginTop: 10 }}>{errorMessage}</Text>}
+      </View>
+    </>
+  );
+
+  const renderVerifyCode = () => (
+    <>
+      <Text style={{
+        fontFamily: 'Montserrat-Medium',
+        fontSize: 26,
+        textAlign: 'center',
+        marginTop: 100
+      }}>
+        Verify Code
+      </Text>
+      <TextInput
+        value={resetCode}
+        onChangeText={setResetCode}
+        placeholder="Reset Code"
+        keyboardType="numeric"
+        style={{
+          width: '90%',
+          backgroundColor: '#e7e9eb',
+          paddingLeft: 10,
+          fontFamily: 'Montserrat-Light',
+          fontSize: 12,
+          borderRadius: 10,
+          marginBottom: 12,
+          padding: 10
+        }}
+      />
+      <TextInput
+        value={newPassword}
+        onChangeText={setNewPassword}
+        placeholder="New Password"
+        secureTextEntry
+        style={{
+          width: '90%',
+          backgroundColor: '#e7e9eb',
+          paddingLeft: 10,
+          fontFamily: 'Montserrat-Light',
+          fontSize: 12,
+          borderRadius: 10,
+          marginBottom: 12,
+          padding: 10
+        }}
+      />
+      <TouchableOpacity
+        disabled={loading || !resetCode || !newPassword}
+        onPress={handleVerifyCode}
+        style={{
+          backgroundColor: '#6d53f4',
+          borderRadius: 20,
+          width: '90%'
+        }}
+      >
+        <Text style={{
+          fontFamily: 'Montserrat-Medium',
+          fontSize: 14,
+          color: 'white',
+          padding: 10,
+          textAlign: 'center'
+        }}>
+          Verify Code
+        </Text>
+      </TouchableOpacity>
+      {errorMessage && <Text style={{ color: 'red', marginTop: 10 }}>{errorMessage}</Text>}
+    </>
+  );
+
+  return (
+    <View style={{
       width: '100%',
       height: '100%',
       display: 'flex',
@@ -284,178 +526,15 @@ export default function SignInPage() {
       backgroundColor: 'white',
       paddingTop: 150,
       gap: 20,
-    },
-    headerContainer: {
-      display: 'flex',
-      gap: 12,
-      marginBottom: 20,
-    },
-    title: {
-      fontFamily: 'Montserrat-Medium',
-      fontSize: 26,
-      textAlign: 'center',
-      marginTop:100
-    },
-    subtitle: {
-      fontFamily: 'Montserrat-Medium',
-      fontSize: 12,
-      color: '#9fa1a1',
-    },
-    formContainer: {
-      width: '90%',
-    },
-    label: {
-      fontFamily: 'Montserrat-Medium',
-      fontSize: 12,
-      marginBottom: 2,
-    },
-    input: {
-      width: '90%',
-      backgroundColor: '#e7e9eb',
-      paddingLeft: 10,
-      fontFamily: 'Montserrat-Light',
-      fontSize: 12,
-      borderRadius: 10,
-      marginBottom: 12,
-      padding: 10,
-    },
-    error: {
-      color: 'red',
-      marginTop: 10,
-    },
-    button: {
-      backgroundColor: '#6d53f4',
-      borderRadius: 20,
-      width: '90%',
-    },
-    buttonText: {
-      fontFamily: 'Montserrat-Medium',
-      fontSize: 14,
-      color: 'white',
-      padding: 10,
-      textAlign: 'center',
-    },
-    linkContainer: {
-      display: 'flex',
-      flexDirection: 'row',
-      gap: 4,
-    },
-    link: {
-      fontFamily: 'Montserrat-Medium',
-      color: 'blue',
-      textDecorationLine: 'underline',
-    },
-  };
-
-  return (
-    <View style={styles.container}>
+    }}>
       {loading && <Loader message={loadingMessage} />}
 
-      {!isResetFlow ? (
-        <>
-          <View style={styles.headerContainer}>
-            <Text style={styles.title}>Sign In</Text>
-            <Text style={styles.subtitle}>Hi! Welcome back, you've been missed</Text>
-          </View>
-
-          <View style={styles.formContainer}>
-            <Text style={styles.label}>Email</Text>
-            <TextInput
-              value={emailAddress}
-              onChangeText={setEmailAddress}
-              placeholder="example@gmail.com"
-              keyboardType="email-address"
-              style={styles.input}
-            />
-
-            <Text style={styles.label}>Password</Text>
-            <TextInput
-              value={password}
-              onChangeText={setPassword}
-              placeholder="********"
-              secureTextEntry
-              style={styles.input}
-            />
-          </View>
-
-          <TouchableOpacity onPress={() => setIsResetFlow(true)}>
-            <Text style={styles.link}>Forgot password?</Text>
-          </TouchableOpacity>
-
-          {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
-
-          <TouchableOpacity
-            disabled={loading || !emailAddress || !password}
-            onPress={onSignInPress}
-            style={styles.button}
-          >
-            <Text style={styles.buttonText}>Sign In</Text>
-          </TouchableOpacity>
-
-          <View style={styles.linkContainer}>
-            <Text style={{ fontFamily: 'Montserrat-Medium' }}>Don't have an account?</Text>
-            <TouchableOpacity onPress={() => router.push('/(auth)/sign-up')}>
-              <Text style={styles.link}>Sign-up</Text>
-            </TouchableOpacity>
-          </View>
-        </>
-      ) : (
-        <>
-          {!isCodeSent ? (
-            <>
-              <View style={{
-                width:'100%',
-                alignItems:"center",
-                display:'flex',
-                gap:10,
-              }}>
-                <Text style={styles.title}>Reset Password</Text>
-                <TextInput
-                  value={emailAddress}
-                  onChangeText={setEmailAddress}
-                  placeholder="Email"
-                  keyboardType="email-address"
-                  style={styles.input}
-                />
-                <TouchableOpacity
-                  disabled={loading || !emailAddress}
-                  onPress={handleResetPassword}
-                  style={styles.button}
-                >
-                  <Text style={styles.buttonText}>Send Reset Code</Text>
-                </TouchableOpacity>
-                {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
-            </View>
-              </>
-          ) : (
-          <>
-            <Text style={styles.title}>Verify Code</Text>
-            <TextInput
-              value={resetCode}
-              onChangeText={setResetCode}
-              placeholder="Reset Code"
-              keyboardType="numeric"
-              style={styles.input}
-            />
-            <TextInput
-              value={newPassword}
-              onChangeText={setNewPassword}
-              placeholder="New Password"
-              secureTextEntry
-              style={styles.input}
-            />
-            <TouchableOpacity
-              disabled={loading || !resetCode || !newPassword}
-              onPress={handleVerifyCode}
-              style={styles.button}
-            >
-              <Text style={styles.buttonText}>Verify Code</Text>
-            </TouchableOpacity>
-            {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
-          </>
-          )}
-        </>
-      )}
+      {!isResetFlow 
+        ? renderSignInForm()
+        : !isCodeSent 
+          ? renderResetPassword()
+          : renderVerifyCode()
+      }
     </View>
   );
 }
