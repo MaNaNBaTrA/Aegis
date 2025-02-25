@@ -1,8 +1,12 @@
+import React, { useEffect } from 'react';
 import { Colors } from '@/constants/Colors';
 import { SignedIn, SignedOut, useAuth } from '@clerk/clerk-expo';
 import { Redirect, router } from 'expo-router';
 import { Image, Text, View, TouchableOpacity } from 'react-native';
-import Loader from '../components/Loader'; 
+import Loader from '../components/Loader';
+import * as SplashScreen from 'expo-splash-screen';
+
+SplashScreen.preventAutoHideAsync();
 
 const AuthButton = ({ onPress, title, backgroundColor, textColor = 'black' }) => (
   <TouchableOpacity
@@ -29,6 +33,21 @@ const AuthButton = ({ onPress, title, backgroundColor, textColor = 'black' }) =>
 
 export default function Page() {
   const { isLoaded, isSignedIn } = useAuth();
+
+  useEffect(() => {
+    async function prepare() {
+      try {
+        if (isLoaded) {
+          await SplashScreen.hideAsync();
+        }
+      } catch (error) {
+        console.error("Error during app loading:", error);
+        await SplashScreen.hideAsync();
+      }
+    }
+
+    prepare();
+  }, [isLoaded]);
 
   if (!isLoaded) {
     return (

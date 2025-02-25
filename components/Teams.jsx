@@ -1,7 +1,7 @@
 import { View, Text, FlatList, Image,} from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { collection, query, getDocs } from 'firebase/firestore'
-import { db } from "../configs/FirebaseConfig.js"
+import { db } from '@configs/FirebaseConfig';
 
 const Teams = () => {
 
