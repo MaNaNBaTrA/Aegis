@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView, Linking } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView, Linking, Platform } from 'react-native';
 import React, { useState } from 'react';
 import { useAuth, useUser } from '@clerk/clerk-expo';
 import { useRouter } from 'expo-router';
@@ -12,12 +12,20 @@ const Profile = () => {
   const router = useRouter();
   const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
 
   const showError = (message) => {
     setError(message);
     setTimeout(() => {
       setError(null);
     }, 3000); 
+  };
+
+  const showSuccess = (message) => {
+    setSuccessMessage(message);
+    setTimeout(() => {
+      setSuccessMessage(null);
+    }, 3000);
   };
 
   const handleSignOut = async () => {
@@ -87,10 +95,29 @@ const Profile = () => {
   };
 
   const handleSupportDeveloper = () => {
-    Linking.openURL('https://your-support-link.com');
+    const upiId = "mananbatra162004@oksbi"; 
+    const name = "Arthur"; 
+    const amount = ""; 
+    const note = "Support for future Projects"; 
+    
+    const upiUrl = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(name)}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}`;
+    
+    Linking.canOpenURL(upiUrl).then(supported => {
+      if (supported) {
+        Linking.openURL(upiUrl);
+      } else {
+        if (Platform.OS === 'android') {
+          Linking.openURL('https://pay.google.com');
+        } else {
+          showError('UPI payment apps not found. Please install a UPI app to support.');
+        }
+      }
+    }).catch(err => {
+      console.error('Error opening UPI app:', err);
+      showError('Could not open payment app. Please try again later.');
+    });
   };
 
-  // State for confirmation dialog
   const [confirmDialog, setConfirmDialog] = useState({
     visible: false,
     title: '',
@@ -102,9 +129,20 @@ const Profile = () => {
     if (!message) return null;
     
     return (
-      <View style={styles.errorContainer}>
+      <View style={styles.messageContainer}>
         <MaterialIcons name="error-outline" size={20} color="#fff" />
-        <Text style={styles.errorText}>{message}</Text>
+        <Text style={styles.messageText}>{message}</Text>
+      </View>
+    );
+  };
+  
+  const SuccessMessage = ({ message }) => {
+    if (!message) return null;
+    
+    return (
+      <View style={[styles.messageContainer, styles.successContainer]}>
+        <MaterialIcons name="check-circle" size={20} color="#fff" />
+        <Text style={styles.messageText}>{message}</Text>
       </View>
     );
   };
@@ -157,7 +195,8 @@ const Profile = () => {
 
   return (
     <ScrollView style={styles.container}>
-      <ErrorMessage message={error} />
+      {error && <ErrorMessage message={error} />}
+      {successMessage && <SuccessMessage message={successMessage} />}
       
       <View style={styles.profileSection}>
         <TouchableOpacity 
@@ -194,7 +233,7 @@ const Profile = () => {
           <View style={styles.menuSection}>
             <Text style={styles.menuSectionTitle}>Support</Text>
             <MenuOption icon="error-outline" title="Report an Error" onPress={handleReportError} />
-            <MenuOption icon="favorite" title="Support Developer" onPress={handleSupportDeveloper} color="#E91E63" />
+            <MenuOption icon="payments" title="Support Developer" onPress={handleSupportDeveloper} color="#E91E63" />
           </View>
 
           <View style={styles.menuSection}>
@@ -305,23 +344,30 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  // Error message styles
-  errorContainer: {
+  messageContainer: {
     backgroundColor: '#ff3b30',
-    padding: 10,
-    marginHorizontal: 10,
-    marginTop: 10,
+    padding: 12,
+    marginHorizontal: 16,
+    marginTop: 16,
     borderRadius: 8,
     flexDirection: 'row',
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  errorText: {
+  successContainer: {
+    backgroundColor: '#34c759',
+  },
+  messageText: {
     color: '#fff',
     marginLeft: 8,
     fontSize: 14,
     fontWeight: '500',
+    flex: 1,
   },
-  // Confirmation dialog styles
   confirmDialogOverlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',

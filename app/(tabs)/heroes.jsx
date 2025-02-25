@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image, ScrollView, ImageBackground, Dimensions} from 'react-native';
 import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../../configs/FirebaseConfig';
+import { db } from '../../configs/FirebaseConfig.js';
 import { useRouter } from 'expo-router';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useUser } from '@clerk/clerk-expo';

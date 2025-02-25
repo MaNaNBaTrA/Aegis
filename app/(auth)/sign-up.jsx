@@ -1,9 +1,20 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { 
+  View, 
+  Text, 
+  TextInput, 
+  TouchableOpacity, 
+  Image, 
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Keyboard
+} from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useSignUp } from '@clerk/clerk-expo';
 import { useRouter } from 'expo-router';
 import Svg, { Circle, Path } from 'react-native-svg';
+import CustomLoader from '../../components/Loader'
 
 const DefaultAvatar = () => (
   <Svg width="120" height="120" viewBox="0 0 120 120" fill="none">
@@ -34,6 +45,40 @@ const ErrorMessage = ({ message }) => message ? (
   </Text>
 ) : null;
 
+const EyeIcon = ({ visible }) => (
+  <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+    {visible ? (
+      <>
+        <Path 
+          d="M12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9Z" 
+          fill="#9fa1a1"
+        />
+        <Path 
+          d="M12 5C7.45001 5 3.86001 7.91 2.28 12C3.86001 16.09 7.45001 19 12 19C16.55 19 20.14 16.09 21.72 12C20.14 7.91 16.55 5 12 5ZM12 17C9.24001 17 7 14.76 7 12C7 9.24 9.24001 7 12 7C14.76 7 17 9.24 17 12C17 14.76 14.76 17 12 17Z" 
+          fill="#9fa1a1"
+        />
+      </>
+    ) : (
+      <>
+        <Path 
+          d="M12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9Z" 
+          fill="#9fa1a1"
+        />
+        <Path 
+          d="M12 5C7.45001 5 3.86001 7.91 2.28 12C3.86001 16.09 7.45001 19 12 19C16.55 19 20.14 16.09 21.72 12C20.14 7.91 16.55 5 12 5ZM12 17C9.24001 17 7 14.76 7 12C7 9.24 9.24001 7 12 7C14.76 7 17 9.24 17 12C17 14.76 14.76 17 12 17Z" 
+          fill="#9fa1a1"
+        />
+        <Path 
+          d="M3.5 3.5L20.5 20.5" 
+          stroke="#9fa1a1" 
+          strokeWidth="1.5" 
+          strokeLinecap="round"
+        />
+      </>
+    )}
+  </Svg>
+);
+
 export default function SignUpScreen() {
   const { isLoaded, signUp, setActive } = useSignUp();
   const router = useRouter();
@@ -60,8 +105,31 @@ export default function SignUpScreen() {
   const [state, setState] = useState({
     loading: false,
     awaitingVerification: false,
-    verifyingOtp: false
+    verifyingOtp: false,
+    showPassword: false,
+    keyboardVisible: false
   });
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      () => setState(prev => ({ ...prev, keyboardVisible: true }))
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => setState(prev => ({ ...prev, keyboardVisible: false }))
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
+
+  const validatePassword = (password) => {
+    const regex = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
+    return regex.test(password);
+  };
 
   const validateForm = () => {
     const newErrors = {};
@@ -91,8 +159,8 @@ export default function SignUpScreen() {
     if (!formData.password) {
       newErrors.password = 'Password is required';
       isValid = false;
-    } else if (formData.password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters long';
+    } else if (!validatePassword(formData.password)) {
+      newErrors.password = 'Password must be at least 8 characters long and contain at least one letter and one number';
       isValid = false;
     }
 
@@ -265,67 +333,76 @@ export default function SignUpScreen() {
     }
   };
 
+  const togglePasswordVisibility = () => {
+    setState(prev => ({ ...prev, showPassword: !prev.showPassword }));
+  };
+
   const renderSignUpForm = () => (
     <>
       <View style={{
         display: 'flex',
         gap: 10,
-        alignItems: 'center'
+        alignItems: 'center',
+        marginTop: state.keyboardVisible ? 10 : 50
       }}>
-        <Text style={{
-          fontFamily: 'Montserrat-Medium',
-          fontSize: 26,
-          textAlign: 'center',
-        }}>
-          Sign Up
-        </Text>
-        <Text style={{
-          fontFamily: 'Montserrat-Medium',
-          fontSize: 12,
-          color: '#9fa1a1',
-          marginBottom: 10
-        }}>
-          Create an account to get started
-        </Text>
-        <View style={{
-          alignItems: 'center',
-          marginBottom: 10,
-          gap: 10
-        }}>
-          <TouchableOpacity
-            onPress={pickImage}
-            style={{
-              width: 120,
-              height: 120,
-              borderRadius: 60,
-              overflow: 'hidden',
-              justifyContent: 'center',
+        {!state.keyboardVisible && (
+          <>
+            <Text style={{
+              fontFamily: 'Montserrat-Medium',
+              fontSize: 26,
+              textAlign: 'center',
+            }}>
+              Sign Up
+            </Text>
+            <Text style={{
+              fontFamily: 'Montserrat-Medium',
+              fontSize: 12,
+              color: '#9fa1a1',
+              marginBottom: 10
+            }}>
+              Create an account to get started
+            </Text>
+            <View style={{
               alignItems: 'center',
-              backgroundColor: '#e7e9eb'
-            }}
-          >
-            {formData.profilePic ? (
-              <Image
-                source={{ uri: formData.profilePic }}
+              marginBottom: 10,
+              gap: 10
+            }}>
+              <TouchableOpacity
+                onPress={pickImage}
                 style={{
-                  width: '100%',
-                  height: '100%'
+                  width: 120,
+                  height: 120,
+                  borderRadius: 60,
+                  overflow: 'hidden',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: '#e7e9eb'
                 }}
-              />
-            ) : (
-              <DefaultAvatar />
-            )}
-          </TouchableOpacity>
+              >
+                {formData.profilePic ? (
+                  <Image
+                    source={{ uri: formData.profilePic }}
+                    style={{
+                      width: '100%',
+                      height: '100%'
+                    }}
+                  />
+                ) : (
+                  <DefaultAvatar />
+                )}
+              </TouchableOpacity>
 
-          <Text style={{
-            fontFamily: 'Montserrat-Medium',
-            fontSize: 12,
-            color: '#6d53f4',
-          }}>
-            Tap to choose profile picture
-          </Text>
-          <ErrorMessage message={errors.profilePic} />
-        </View>
+              <Text style={{
+                fontFamily: 'Montserrat-Medium',
+                fontSize: 12,
+                color: '#6d53f4',
+              }}>
+                Tap to choose profile picture
+              </Text>
+              <ErrorMessage message={errors.profilePic} />
+            </View>
+          </>
+        )}
       </View>
 
       <View style={{ width: '90%', gap: 12 }}>
@@ -429,26 +506,38 @@ export default function SignUpScreen() {
           }}>
             Password
           </Text>
-          <TextInput
-            value={formData.password}
-            onChangeText={(text) => {
-              setFormData(prev => ({ ...prev, password: text }));
-              setErrors(prev => ({ ...prev, password: '' }));
-            }}
-            placeholder="Min 8 characters"
-            secureTextEntry
-            style={{
-              width: '100%',
-              backgroundColor: '#e7e9eb',
-              paddingLeft: 10,
-              fontFamily: 'Montserrat-Light',
-              fontSize: 12,
-              borderRadius: 10,
-              padding: 10,
-              borderWidth: errors.password ? 1 : 0,
-              borderColor: '#dc2626'
-            }}
-          />
+          <View style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            width: '100%',
+            backgroundColor: '#e7e9eb',
+            borderRadius: 10,
+            borderWidth: errors.password ? 1 : 0,
+            borderColor: '#dc2626'
+          }}>
+            <TextInput
+              value={formData.password}
+              onChangeText={(text) => {
+                setFormData(prev => ({ ...prev, password: text }));
+                setErrors(prev => ({ ...prev, password: '' }));
+              }}
+              placeholder="Min 8 characters"
+              secureTextEntry={!state.showPassword}
+              style={{
+                flex: 1,
+                paddingLeft: 10,
+                fontFamily: 'Montserrat-Light',
+                fontSize: 12,
+                padding: 10,
+              }}
+            />
+            <TouchableOpacity 
+              onPress={togglePasswordVisibility}
+              style={{ paddingHorizontal: 10 }}
+            >
+              <EyeIcon visible={state.showPassword} />
+            </TouchableOpacity>
+          </View>
           <ErrorMessage message={errors.password} />
         </View>
 
@@ -521,7 +610,7 @@ export default function SignUpScreen() {
           fontFamily: 'Montserrat-Medium',
           fontSize: 26,
           textAlign: 'center',
-          marginTop: 170
+          marginTop: state.keyboardVisible ? 50 : 170
         }}>
           Verify Your Email
         </Text>
@@ -577,29 +666,44 @@ export default function SignUpScreen() {
   );
 
   return (
-    <View style={{
-      width: '100%',
-      height: '100%',
-      display: 'flex',
-      alignItems: 'center',
-      flex: 1,
-      backgroundColor: 'white',
-      paddingTop: 50,
-      gap: 20
-    }}>
-      {state.loading && (
-        <ActivityIndicator 
-          size="large" 
-          color="#6d53f4" 
-          style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            zIndex: 999
-          }}
-        />
-      )}
-      {state.awaitingVerification ? renderOtpVerification() : renderSignUpForm()}
-    </View>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={{ flex: 1 }}
+    >
+      <ScrollView 
+        contentContainerStyle={{
+          flexGrow: 1,
+          backgroundColor: 'white',
+        }}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={{
+          width: '100%',
+          minHeight: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          backgroundColor: 'white',
+          paddingTop: Platform.OS === 'ios' ? 50 : 30,
+          gap: 20
+        }}>
+          {state.loading && (
+            <View style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              justifyContent: 'center',
+              alignItems: 'center',
+              backgroundColor: 'rgba(255, 255, 255, 0.7)',
+              zIndex: 999
+            }}>
+              <CustomLoader size={60} color="#6d53f4" />
+            </View>
+          )}
+          {state.awaitingVerification ? renderOtpVerification() : renderSignUpForm()}
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }

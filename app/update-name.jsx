@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
 import React, { useState } from 'react';
 import { useUser } from '@clerk/clerk-expo';
 import { useRouter } from 'expo-router';
@@ -11,31 +11,73 @@ const UpdateName = () => {
   const [firstName, setFirstName] = useState(user?.firstName || '');
   const [lastName, setLastName] = useState(user?.lastName || '');
   const [isUpdating, setIsUpdating] = useState(false);
+  const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
+
+  const showError = (message) => {
+    setError(message);
+    setTimeout(() => {
+      setError(null);
+    }, 3000);
+  };
+
+  const showSuccess = (message) => {
+    setSuccessMessage(message);
+    setTimeout(() => {
+      setSuccessMessage(null);
+      router.back();
+    }, 1500);
+  };
 
   const handleSave = async () => {
     if (!firstName.trim()) {
-      Alert.alert('Error', 'First name cannot be empty');
+      showError('First name cannot be empty');
       return;
     }
 
     try {
       setIsUpdating(true);
+      
       await user.update({
         firstName: firstName.trim(),
         lastName: lastName.trim(),
       });
-      setIsUpdating(false);
-      Alert.alert('Success', 'Your name has been updated successfully');
-      router.back();
+      
+      setTimeout(() => {
+        setIsUpdating(false);
+        showSuccess('Your name has been updated successfully');
+      }, 1500);
     } catch (error) {
       setIsUpdating(false);
       console.error('Error updating name:', error);
-      Alert.alert('Error', 'Failed to update your name. Please try again.');
+      showError(`Failed to update your name: ${error.message || 'Unknown error'}`);
     }
   };
 
   const handleCancel = () => {
     router.back();
+  };
+
+  const ErrorMessage = ({ message }) => {
+    if (!message) return null;
+    
+    return (
+      <View style={styles.messageContainer}>
+        <MaterialIcons name="error-outline" size={20} color="#fff" />
+        <Text style={styles.messageText}>{message}</Text>
+      </View>
+    );
+  };
+
+  const SuccessMessage = ({ message }) => {
+    if (!message) return null;
+    
+    return (
+      <View style={[styles.messageContainer, styles.successContainer]}>
+        <MaterialIcons name="check-circle" size={20} color="#fff" />
+        <Text style={styles.messageText}>{message}</Text>
+      </View>
+    );
   };
 
   if (!isLoaded) {
@@ -47,6 +89,9 @@ const UpdateName = () => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
     >
+      {error && <ErrorMessage message={error} />}
+      {successMessage && <SuccessMessage message={successMessage} />}
+      
       <View style={styles.header}>
         <TouchableOpacity onPress={handleCancel} style={styles.backButton}>
           <MaterialIcons name="arrow-back" size={24} color="#333" />
@@ -180,6 +225,30 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.8)',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  messageContainer: {
+    backgroundColor: '#ff3b30',
+    padding: 12,
+    marginHorizontal: 16,
+    marginTop: Platform.OS === 'ios' ? 50 : 16,
+    borderRadius: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  successContainer: {
+    backgroundColor: '#34c759',
+  },
+  messageText: {
+    color: '#fff',
+    marginLeft: 8,
+    fontSize: 14,
+    fontWeight: '500',
+    flex: 1,
   },
 });
 

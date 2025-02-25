@@ -6,7 +6,7 @@ import Heroes from '../../components/Heroes';
 import Teams from '../../components/Teams';
 import Footer from '../../components/Footer';
 import { collection, getDocs } from 'firebase/firestore';
-import { db } from "../../configs/FirebaseConfig";
+import { db } from "../../configs/FirebaseConfig.js";
 import { useRouter } from 'expo-router';
 import { useUser } from '@clerk/clerk-expo';
 import LoadingScreen from '../../components/Loader'

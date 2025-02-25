@@ -188,7 +188,7 @@ const HeroDetail = () => {
   if (noData) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>No Data Found</Text>
+        <Text>The Data is yet to be updated. Please check other options</Text>
       </View>
     );
   }

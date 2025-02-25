@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSignIn, useSession, useAuth, useClerk } from '@clerk/clerk-expo';
 import { useRouter } from 'expo-router';
-import { Text, TextInput, View, Alert, TouchableOpacity } from 'react-native';
+import { Text, TextInput, View, TouchableOpacity } from 'react-native';
 import Loader from '../../components/Loader';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function SignInPage() {
   const { signIn, setActive, isLoaded } = useSignIn();
@@ -20,6 +21,18 @@ export default function SignInPage() {
   const [isCodeSent, setIsCodeSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('');
+  const [notification, setNotification] = useState({ show: false, message: '', title: '', actions: [] });
+  
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [newPasswordVisible, setNewPasswordVisible] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setPasswordVisible(!passwordVisible);
+  };
+
+  const toggleNewPasswordVisibility = () => {
+    setNewPasswordVisible(!newPasswordVisible);
+  };
 
   useEffect(() => {
     const checkExistingSession = async () => {
@@ -52,9 +65,24 @@ export default function SignInPage() {
       await signOut();
     } catch (error) {
       console.error('Error signing out:', error);
-      Alert.alert('Error', 'Failed to sign out. Please try again.');
+      showNotification('Error', 'Failed to sign out. Please try again.', [
+        { text: 'OK', onPress: () => hideNotification() }
+      ]);
     }
   }, [signOut]);
+
+  const showNotification = (title, message, actions = []) => {
+    setNotification({
+      show: true,
+      title,
+      message,
+      actions: actions.length ? actions : [{ text: 'OK', onPress: () => hideNotification() }]
+    });
+  };
+
+  const hideNotification = () => {
+    setNotification({ show: false, message: '', title: '', actions: [] });
+  };
 
   const onSignInPress = useCallback(async () => {
     if (!isLoaded || !emailAddress || !password) return;
@@ -97,18 +125,21 @@ export default function SignInPage() {
     const firstError = err.errors[0];
     switch (firstError.code) {
       case 'session_exists':
-        Alert.alert(
+        showNotification(
           "Session Exists",
           "You're currently signed in to another account. Would you like to sign out and continue?",
           [
             {
               text: "Cancel",
-              style: "cancel",
-              onPress: () => setLoading(false),
+              onPress: () => {
+                hideNotification();
+                setLoading(false);
+              }
             },
             {
               text: "Sign Out & Continue",
               onPress: async () => {
+                hideNotification();
                 await handleSignOut();
                 onSignInPress();
               },
@@ -147,7 +178,7 @@ export default function SignInPage() {
 
       if (firstFactor.status === 'needs_first_factor') {
         setIsCodeSent(true);
-        Alert.alert(
+        showNotification(
           'Check your email',
           "We've sent you a verification code. Please check your email and enter the code below."
         );
@@ -169,18 +200,21 @@ export default function SignInPage() {
     const firstError = err.errors[0];
     switch (firstError.code) {
       case 'session_exists':
-        Alert.alert(
+        showNotification(
           'Session Exists',
           "You're currently signed in to another account. Would you like to sign out and continue?",
           [
             {
               text: 'Cancel',
-              style: 'cancel',
-              onPress: () => setLoading(false),
+              onPress: () => {
+                hideNotification();
+                setLoading(false);
+              }
             },
             {
               text: 'Sign Out & Continue',
               onPress: async () => {
+                hideNotification();
                 await handleSignOut();
                 handleResetPassword();
               },
@@ -212,13 +246,14 @@ export default function SignInPage() {
 
       if (attemptVerification.status === 'complete') {
         await handleSignOut();
-        Alert.alert(
+        showNotification(
           'Success',
           'Your password has been reset successfully. Please sign in with your new password.',
           [
             {
               text: 'OK',
               onPress: () => {
+                hideNotification();
                 resetForm();
                 router.replace('/sign-in');
               },
@@ -242,18 +277,21 @@ export default function SignInPage() {
 
     const firstError = err.errors[0];
     if (firstError.code === 'session_exists') {
-      Alert.alert(
+      showNotification(
         'Session Exists',
         "You're currently signed in to another account. Would you like to sign out and continue?",
         [
           {
             text: 'Cancel',
-            style: 'cancel',
-            onPress: () => setLoading(false),
+            onPress: () => {
+              hideNotification();
+              setLoading(false);
+            }
           },
           {
             text: 'Sign Out & Continue',
             onPress: async () => {
+              hideNotification();
               await handleSignOut();
               handleVerifyCode();
             },
@@ -272,9 +310,75 @@ export default function SignInPage() {
     setNewPassword('');
     setErrorMessage('');
     setPassword('');
+    setPasswordVisible(false);
+    setNewPasswordVisible(false);
   };
 
- 
+  const NotificationModal = () => (
+    notification.show ? (
+      <View style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 1000,
+      }}>
+        <View style={{
+          backgroundColor: 'white',
+          borderRadius: 10,
+          padding: 20,
+          width: '80%',
+          alignItems: 'center',
+        }}>
+          <Text style={{ 
+            fontFamily: 'Montserrat-Medium', 
+            fontSize: 18, 
+            marginBottom: 10 
+          }}>
+            {notification.title}
+          </Text>
+          <Text style={{ 
+            fontFamily: 'Montserrat-Light', 
+            textAlign: 'center', 
+            marginBottom: 20 
+          }}>
+            {notification.message}
+          </Text>
+          <View style={{ 
+            flexDirection: 'row', 
+            justifyContent: 'space-around',
+            width: '100%' 
+          }}>
+            {notification.actions.map((action, index) => (
+              <TouchableOpacity
+                key={index}
+                onPress={action.onPress}
+                style={{
+                  backgroundColor: index === notification.actions.length - 1 ? '#6d53f4' : '#e7e9eb',
+                  borderRadius: 10,
+                  paddingVertical: 8,
+                  paddingHorizontal: 15,
+                  marginHorizontal: 5,
+                }}
+              >
+                <Text style={{
+                  fontFamily: 'Montserrat-Medium',
+                  color: index === notification.actions.length - 1 ? 'white' : 'black',
+                }}>
+                  {action.text}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+      </View>
+    ) : null
+  );
+
   const renderSignInForm = () => (
     <>
       <View style={{ display: 'flex', gap: 12,}}>
@@ -327,21 +431,35 @@ export default function SignInPage() {
         }}>
           Password
         </Text>
-        <TextInput
-          value={password}
-          onChangeText={setPassword}
-          placeholder="********"
-          secureTextEntry
-          style={{
-            width: '100%',
-            backgroundColor: '#e7e9eb',
-            paddingLeft: 10,
-            fontFamily: 'Montserrat-Light',
-            fontSize: 12,
-            borderRadius: 10,
-            padding: 10
-          }}
-        />
+        <View style={{
+          flexDirection: 'row',
+          width: '100%',
+          backgroundColor: '#e7e9eb',
+          borderRadius: 10,
+          alignItems: 'center',
+          marginBottom: 12,
+        }}>
+          <TextInput
+            value={password}
+            onChangeText={setPassword}
+            placeholder="********"
+            secureTextEntry={!passwordVisible}
+            style={{
+              flex: 1,
+              paddingLeft: 10,
+              fontFamily: 'Montserrat-Light',
+              fontSize: 12,
+              padding: 10
+            }}
+          />
+          <TouchableOpacity onPress={togglePasswordVisibility} style={{ padding: 10 }}>
+            <Ionicons 
+              name={passwordVisible ? "eye" : "eye-off"} 
+              size={20} 
+              color="#6d53f4" 
+            />
+          </TouchableOpacity>
+        </View>
       </View>
 
       <TouchableOpacity onPress={() => setIsResetFlow(true)}>
@@ -477,22 +595,35 @@ export default function SignInPage() {
           padding: 10
         }}
       />
-      <TextInput
-        value={newPassword}
-        onChangeText={setNewPassword}
-        placeholder="New Password"
-        secureTextEntry
-        style={{
-          width: '90%',
-          backgroundColor: '#e7e9eb',
-          paddingLeft: 10,
-          fontFamily: 'Montserrat-Light',
-          fontSize: 12,
-          borderRadius: 10,
-          marginBottom: 12,
-          padding: 10
-        }}
-      />
+      <View style={{
+        flexDirection: 'row',
+        width: '90%',
+        backgroundColor: '#e7e9eb',
+        borderRadius: 10,
+        alignItems: 'center',
+        marginBottom: 12,
+      }}>
+        <TextInput
+          value={newPassword}
+          onChangeText={setNewPassword}
+          placeholder="New Password"
+          secureTextEntry={!newPasswordVisible}
+          style={{
+            flex: 1,
+            paddingLeft: 10,
+            fontFamily: 'Montserrat-Light',
+            fontSize: 12,
+            padding: 10
+          }}
+        />
+        <TouchableOpacity onPress={toggleNewPasswordVisibility} style={{ padding: 10 }}>
+          <Ionicons 
+            name={newPasswordVisible ? "eye" : "eye-off"} 
+            size={20} 
+            color="#6d53f4" 
+          />
+        </TouchableOpacity>
+      </View>
       <TouchableOpacity
         disabled={loading || !resetCode || !newPassword}
         onPress={handleVerifyCode}
@@ -528,6 +659,7 @@ export default function SignInPage() {
       gap: 20,
     }}>
       {loading && <Loader message={loadingMessage} />}
+      <NotificationModal />
 
       {!isResetFlow 
         ? renderSignInForm()

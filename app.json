@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "aegis",
+    "name": "Aegis",
     "slug": "aegis",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -16,7 +16,7 @@
         "foregroundImage": "./assets/images/Foreground-01.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.mananbatra16.aegis"
+      "package": "com.arthur.aegis"
     },
     "web": {
       "bundler": "metro",
@@ -34,7 +34,8 @@
           "backgroundColor": "#ffffff"
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true

@@ -56,10 +56,12 @@ const ChangePassword = () => {
 
     try {
       setIsUpdating(true);
-      await user.update({
-        password: newPassword,
-        currentPassword: currentPassword,
+      
+      await user.updatePassword({
+        currentPassword,
+        newPassword
       });
+      
       setTimeout(() => {
         setIsUpdating(false);
         showSuccess('Your password has been updated successfully');
@@ -67,11 +69,14 @@ const ChangePassword = () => {
     } catch (error) {
       setIsUpdating(false);
       console.error('Error changing password:', error);
-      
-      if (error.message?.includes('incorrect')) {
+      if (error.message?.includes('incorrect') || error.message?.includes('wrong')) {
         showError('Current password is incorrect');
+      } else if (error.message?.includes('requirements')) {
+        showError('New password does not meet security requirements');
+      } else if (error.message?.includes('rate limit')) {
+        showError('Too many attempts. Please try again later');
       } else {
-        showError('Failed to change your password. Please try again.');
+        showError(`Failed to change password: ${error.message || 'Unknown error'}`);
       }
     }
   };
@@ -79,8 +84,6 @@ const ChangePassword = () => {
   const handleCancel = () => {
     router.back();
   };
-
- 
 
   const ErrorMessage = ({ message }) => {
     if (!message) return null;
