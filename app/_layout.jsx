@@ -2,20 +2,25 @@ import { useFonts } from "expo-font";
 import { ClerkProvider, ClerkLoaded } from '@clerk/clerk-expo';
 import { tokenCache } from '@/cache';
 import { Slot } from 'expo-router';
-import Loader from '../components/Loader'; 
+import Loader from '../components/Loader';
+import * as SplashScreen from 'expo-splash-screen';
+import { useEffect, useState } from 'react';
+import { View, Text } from 'react-native';
+
+
+SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-
-
+  const [appIsReady, setAppIsReady] = useState(false);
   const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
   if (!publishableKey) {
     throw new Error(
       'Missing Publishable Key. Please set EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY in your .env',
-    )
+    );
   }
 
-  const [fontsLoaded] = useFonts({
+  const [fontsLoaded, fontError] = useFonts({
     "Montserrat-Bold": require("../assets/fonts/Monserrat/Montserrat-Bold.ttf"),
     "Montserrat-ExtraBold": require("../assets/fonts/Monserrat/Montserrat-ExtraBold.ttf"),
     "Montserrat-Light": require("../assets/fonts/Monserrat/Montserrat-Light.ttf"),
@@ -27,10 +32,29 @@ export default function RootLayout() {
     "Montserrat-SemiBoldItalic": require("../assets/fonts/Monserrat/Montserrat-SemiBoldItalic.ttf"),
   });
 
-  if (!fontsLoaded) {
-    return (
-      <Loader/>
-    );
+  useEffect(() => {
+    async function prepare() {
+      try {
+        if (fontError) {
+          console.warn("Font loading error:", fontError);
+        }
+        
+        if (fontsLoaded || fontError) {
+          setAppIsReady(true);
+          
+          await SplashScreen.hideAsync();
+        }
+      } catch (e) {
+        console.warn("Error preparing app:", e);
+        setAppIsReady(true);
+      }
+    }
+
+    prepare();
+  }, [fontsLoaded, fontError]);
+
+  if (!appIsReady) {
+    return <Loader />;
   }
 
   return (

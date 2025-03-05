@@ -1,12 +1,9 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Colors } from '@/constants/Colors';
 import { SignedIn, SignedOut, useAuth } from '@clerk/clerk-expo';
 import { Redirect, router } from 'expo-router';
-import { Image, Text, View, TouchableOpacity } from 'react-native';
+import { Image, Text, View, TouchableOpacity, StyleSheet } from 'react-native';
 import Loader from '../components/Loader';
-import * as SplashScreen from 'expo-splash-screen';
-
-SplashScreen.preventAutoHideAsync();
 
 const AuthButton = ({ onPress, title, backgroundColor, textColor = 'black' }) => (
   <TouchableOpacity
@@ -34,29 +31,10 @@ const AuthButton = ({ onPress, title, backgroundColor, textColor = 'black' }) =>
 export default function Page() {
   const { isLoaded, isSignedIn } = useAuth();
 
-  useEffect(() => {
-    async function prepare() {
-      try {
-        if (isLoaded) {
-          await SplashScreen.hideAsync();
-        }
-      } catch (error) {
-        console.error("Error during app loading:", error);
-        await SplashScreen.hideAsync();
-      }
-    }
-
-    prepare();
-  }, [isLoaded]);
-
   if (!isLoaded) {
     return (
-      <View style={{
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center'
-      }}>
-        <Loader/>
+      <View style={styles.loaderContainer}>
+        <Loader />
       </View>
     );
   }
@@ -66,53 +44,30 @@ export default function Page() {
   }
 
   return (
-    <View style={{
-      flex: 1,
-    }}>
+    <View style={styles.container}>
       <SignedIn>
         <Redirect href="/home" />
       </SignedIn>
+      
       <SignedOut>
         <Image
           source={require('../assets/images/Main_BG.png')}
           resizeMode='contain'
-          style={{
-            width: '100%',
-            height: '65%',
-          }}
+          style={styles.backgroundImage}
         />
-        <View style={{
-          width: '100%',
-          height: '35%',
-          alignItems: 'center',
-          gap: 14,
-          paddingTop: 20,
-        }}>
-          <View style={{
-            width: '90%',
-          }}>
-            <Text style={{
-              fontFamily: 'Montserrat-Bold',
-              fontSize: 36,
-            }}>
+        
+        <View style={styles.contentContainer}>
+          <View style={styles.textContainer}>
+            <Text style={styles.titleText}>
               Let's
             </Text>
-            <Text style={{
-              fontFamily: 'Montserrat-Bold',
-              fontSize: 36,
-              lineHeight: 36,
-            }}>
+            <Text style={[styles.titleText, { lineHeight: 36 }]}>
               get started
             </Text>
           </View>
           
-          <View style={{
-            width: '90%',
-          }}>
-            <Text style={{
-              fontFamily: 'Montserrat-SemiBold',
-              fontSize: 14,
-            }}>
+          <View style={styles.textContainer}>
+            <Text style={styles.subtitleText}>
               Everything starts from here
             </Text>
           </View>
@@ -134,3 +89,37 @@ export default function Page() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  loaderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  container: {
+    flex: 1,
+    backgroundColor: 'white',
+  },
+  backgroundImage: {
+    width: '100%',
+    height: '65%',
+  },
+  contentContainer: {
+    width: '100%',
+    height: '35%',
+    alignItems: 'center',
+    gap: 14,
+    paddingTop: 20,
+  },
+  textContainer: {
+    width: '90%',
+  },
+  titleText: {
+    fontFamily: 'Montserrat-Bold',
+    fontSize: 36,
+  },
+  subtitleText: {
+    fontFamily: 'Montserrat-SemiBold',
+    fontSize: 14,
+  },
+});
