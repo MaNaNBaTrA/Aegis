@@ -1,22 +1,37 @@
 {
-    "build": {
-      "preview": {
-        "android": {
-          "buildType": "apk"
-        }
+  "cli": {
+    "version": ">= 3.7.2"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "android": {
+        "gradleCommand": ":app:assembleDebug"
       },
-      "preview2": {
-        "android": {
-          "gradleCommand": ":app:assembleRelease"
-        }
+      "ios": {
+        "buildConfiguration": "Debug"
       },
-      "preview3": {
-        "developmentClient": true
+      "node": "20.18.1",
+      "env": {
+        "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_test_Y2hlZXJmdWwtY2hpbXAtNTYuY2xlcmsuYWNjb3VudHMuZGV2JA"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "node": "20.18.1",
+      "env": {
+        "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_test_Y2hlZXJmdWwtY2hpbXAtNTYuY2xlcmsuYWNjb3VudHMuZGV2JA"
+      }
+    },
+    "production": {
+      "node": "20.18.1",
+      "android": {
+        "buildType": "apk"
       },
-      "preview4": {
-        "distribution": "internal"
-      },
-      "production": {}
+      "env": {
+        "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_test_Y2hlZXJmdWwtY2hpbXAtNTYuY2xlcmsuYWNjb3VudHMuZGV2JA"
+      }
     }
   }
-  
+}
