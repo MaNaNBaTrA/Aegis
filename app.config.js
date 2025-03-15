@@ -4,16 +4,20 @@ export default {
     slug: "aegis",
     version: "1.0.0",
     orientation: "portrait",
-    icon: "./assets/images/Foreground-01.png",
+    icon: "./assets/images/Android-Icon.png",
     scheme: "myapp",
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
     ios: {
-      supportsTablet: true
+      supportsTablet: true,
+      adaptiveIcon: {
+        foregroundImage: "./assets/images/Ios-Icon.png",
+        backgroundColor: "#ffffff"
+      },
     },
     android: {
       adaptiveIcon: {
-        foregroundImage: "./assets/images/Foreground-01.png",
+        foregroundImage: "./assets/images/Android-Icon.png",
         backgroundColor: "#ffffff"
       },
       package: "com.arthur.aegis"
@@ -21,7 +25,7 @@ export default {
     web: {
       bundler: "metro",
       output: "static",
-      favicon: "./assets/images/Foreground-01.png"
+      favicon: "./assets/images/Web-Icon.png"
     },
     plugins: [
       "expo-router",

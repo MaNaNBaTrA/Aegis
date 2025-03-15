@@ -1,10 +1,12 @@
-import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView, Linking, Platform } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView, Linking, Platform, Alert } from 'react-native';
 import React, { useState } from 'react';
 import { useAuth, useUser } from '@clerk/clerk-expo';
 import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { MaterialIcons } from '@expo/vector-icons';
 import Loader from '../../components/Loader';
+
+
 
 const Profile = () => {
   const { signOut } = useAuth();
@@ -13,6 +15,12 @@ const Profile = () => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
+  const [confirmDialog, setConfirmDialog] = useState({
+    visible: false,
+    title: '',
+    message: '',
+    onConfirm: null
+  });
 
   const showError = (message) => {
     setError(message);
@@ -90,6 +98,8 @@ const Profile = () => {
     router.push('/change-password');
   };
 
+  
+
   const handleReportError = () => {
     Linking.openURL('mailto:mananbatradev@gmail.com?subject=Error Report - Aegis');
   };
@@ -100,30 +110,31 @@ const Profile = () => {
     const amount = ""; 
     const note = "Support for future Projects"; 
     
-    const upiUrl = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(name)}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}`;
-    
-    Linking.canOpenURL(upiUrl).then(supported => {
-      if (supported) {
-        Linking.openURL(upiUrl);
-      } else {
-        if (Platform.OS === 'android') {
-          Linking.openURL('https://pay.google.com');
-        } else {
-          showError('UPI payment apps not found. Please install a UPI app to support.');
-        }
-      }
-    }).catch(err => {
-      console.error('Error opening UPI app:', err);
-      showError('Could not open payment app. Please try again later.');
-    });
+    if (Platform.OS === 'android') {
+      const genericUri = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(name)}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}`;
+      
+      Linking.openURL(genericUri)
+        .catch(err => {
+          console.error('Error opening UPI URL:', err);
+          showError('No UPI apps found or error opening payment.');
+        });
+    } else if (Platform.OS === 'ios') {
+      showError('UPI payments work best on Android devices. Please use a UPI-enabled app with ID: ' + upiId);
+    } else {
+      showError('UPI payments are currently supported on mobile devices only.');
+    }
   };
 
-  const [confirmDialog, setConfirmDialog] = useState({
-    visible: false,
-    title: '',
-    message: '',
-    onConfirm: null
-  });
+  const SuccessMessage = ({ message }) => {
+    if (!message) return null;
+    
+    return (
+      <View style={[styles.messageContainer, styles.successContainer]}>
+        <MaterialIcons name="check-circle" size={20} color="#fff" />
+        <Text style={styles.messageText}>{message}</Text>
+      </View>
+    );
+  };
 
   const ErrorMessage = ({ message }) => {
     if (!message) return null;
@@ -131,17 +142,6 @@ const Profile = () => {
     return (
       <View style={styles.messageContainer}>
         <MaterialIcons name="error-outline" size={20} color="#fff" />
-        <Text style={styles.messageText}>{message}</Text>
-      </View>
-    );
-  };
-  
-  const SuccessMessage = ({ message }) => {
-    if (!message) return null;
-    
-    return (
-      <View style={[styles.messageContainer, styles.successContainer]}>
-        <MaterialIcons name="check-circle" size={20} color="#fff" />
         <Text style={styles.messageText}>{message}</Text>
       </View>
     );
