@@ -4,20 +4,20 @@ export default {
     slug: "aegis",
     version: "1.0.0",
     orientation: "portrait",
-    icon: "./assets/images/Icon-01.png",
+    icon: "./assets/images/App-Icon-01.png",
     scheme: "myapp",
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
     ios: {
       supportsTablet: true,
       adaptiveIcon: {
-        foregroundImage: "./assets/images/Icon-01.png",
+        foregroundImage: "./assets/images/App-Icon-01.png",
         backgroundColor: "#ffffff"
       },
     },
     android: {
       adaptiveIcon: {
-        foregroundImage: "./assets/images/Icon-01.png",
+        foregroundImage: "./assets/images/App-Icon-01.png",
         backgroundColor: "#ffffff"
       },
       package: "com.arthur.aegis"
