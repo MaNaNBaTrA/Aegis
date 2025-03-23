@@ -4,20 +4,20 @@ export default {
     slug: "aegis",
     version: "1.0.0",
     orientation: "portrait",
-    icon: "./assets/images/Android-Icon.png",
+    icon: "./assets/images/Icon-01.png",
     scheme: "myapp",
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
     ios: {
       supportsTablet: true,
       adaptiveIcon: {
-        foregroundImage: "./assets/images/Ios-Icon.png",
+        foregroundImage: "./assets/images/Icon-01.png",
         backgroundColor: "#ffffff"
       },
     },
     android: {
       adaptiveIcon: {
-        foregroundImage: "./assets/images/Android-Icon.png",
+        foregroundImage: "./assets/images/Icon-01.png",
         backgroundColor: "#ffffff"
       },
       package: "com.arthur.aegis"
@@ -32,7 +32,7 @@ export default {
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/Foreground-01.png",
+          "image": "./assets/images/Splash-Screen.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
